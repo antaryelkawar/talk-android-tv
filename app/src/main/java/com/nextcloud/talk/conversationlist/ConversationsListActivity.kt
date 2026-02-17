@@ -1579,70 +1579,68 @@ class ConversationsListActivity :
     private fun showTvCallOptionsDialog(conversation: ConversationModel) {
         selectedConversation = conversation
         
-        binding.floatingActionButton.let { fab ->
-            val dialogBuilder = MaterialAlertDialogBuilder(fab.context)
-                .setIcon(
-                    viewThemeUtils.dialog.colorMaterialAlertDialogIcon(
-                        context,
-                        R.drawable.ic_videocam_white_24px
-                    )
+        val dialogBuilder = MaterialAlertDialogBuilder(this)
+            .setIcon(
+                viewThemeUtils.dialog.colorMaterialAlertDialogIcon(
+                    context,
+                    R.drawable.ic_videocam_white_24px
                 )
-                .setTitle(conversation.displayName ?: getString(R.string.nc_app_product_name))
-                .setMessage(getString(R.string.nc_call_incoming))
-                .setPositiveButton(R.string.nc_call_video) { dialog, _ ->
-                    selectedConversation?.let {
-                        val bundle = Bundle()
-                        bundle.putString(KEY_ROOM_TOKEN, it.token)
-                        bundle.putBoolean(BundleKeys.KEY_FROM_NOTIFICATION_START_CALL, true)
-                        bundle.putBoolean(BundleKeys.KEY_CALL_VOICE_ONLY, false)
-                        val intent = Intent(context, ChatActivity::class.java)
-                        intent.putExtras(bundle)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        startActivity(intent)
-                    }
-                }
-                .setNegativeButton(R.string.nc_call_voice) { dialog, _ ->
-                    selectedConversation?.let {
-                        val bundle = Bundle()
-                        bundle.putString(KEY_ROOM_TOKEN, it.token)
-                        bundle.putBoolean(BundleKeys.KEY_FROM_NOTIFICATION_START_CALL, true)
-                        bundle.putBoolean(BundleKeys.KEY_CALL_VOICE_ONLY, true)
-                        val intent = Intent(context, ChatActivity::class.java)
-                        intent.putExtras(bundle)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        startActivity(intent)
-                    }
-                }
-                .setNeutralButton(R.string.nc_chat) { dialog, _ ->
-                    handleConversation(selectedConversation)
-                }
-
-            viewThemeUtils.dialog.colorMaterialAlertDialogBackground(fab.context, dialogBuilder)
-            val dialog = dialogBuilder.show()
-            
-            // Style buttons for TV
-            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-            val neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL)
-            
-            viewThemeUtils.platform.colorTextButtons(positiveButton, negativeButton, neutralButton)
-            
-            // Make buttons larger and focusable for TV
-            positiveButton.isFocusable = true
-            negativeButton.isFocusable = true
-            neutralButton.isFocusable = true
-            
-            // Setup TV navigation between buttons
-            TvNavigationHelper.setupButtonGroupForTv(
-                listOf(positiveButton, negativeButton, neutralButton),
-                TvUtils.NavigationOrientation.HORIZONTAL,
-                circular = true
             )
-            
-            // Request focus on video call button (primary action for TV)
-            positiveButton.post {
-                positiveButton.requestFocus()
+            .setTitle(conversation.displayName ?: getString(R.string.nc_app_product_name))
+            .setMessage(getString(R.string.nc_call_incoming))
+            .setPositiveButton(R.string.nc_call_video) { _, _ ->
+                selectedConversation?.let {
+                    val bundle = Bundle()
+                    bundle.putString(KEY_ROOM_TOKEN, it.token)
+                    bundle.putBoolean(BundleKeys.KEY_FROM_NOTIFICATION_START_CALL, true)
+                    bundle.putBoolean(BundleKeys.KEY_CALL_VOICE_ONLY, false)
+                    val intent = Intent(context, ChatActivity::class.java)
+                    intent.putExtras(bundle)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    startActivity(intent)
+                }
             }
+            .setNegativeButton(R.string.nc_call_voice) { _, _ ->
+                selectedConversation?.let {
+                    val bundle = Bundle()
+                    bundle.putString(KEY_ROOM_TOKEN, it.token)
+                    bundle.putBoolean(BundleKeys.KEY_FROM_NOTIFICATION_START_CALL, true)
+                    bundle.putBoolean(BundleKeys.KEY_CALL_VOICE_ONLY, true)
+                    val intent = Intent(context, ChatActivity::class.java)
+                    intent.putExtras(bundle)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    startActivity(intent)
+                }
+            }
+            .setNeutralButton(R.string.nc_settings) { _, _ ->
+                handleConversation(selectedConversation)
+            }
+
+        viewThemeUtils.dialog.colorMaterialAlertDialogBackground(this, dialogBuilder)
+        val dialog = dialogBuilder.show()
+        
+        // Style buttons for TV
+        val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+        val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+        val neutralButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL)
+        
+        viewThemeUtils.platform.colorTextButtons(positiveButton, negativeButton, neutralButton)
+        
+        // Make buttons larger and focusable for TV
+        positiveButton.isFocusable = true
+        negativeButton.isFocusable = true
+        neutralButton.isFocusable = true
+        
+        // Setup TV navigation between buttons
+        TvNavigationHelper.setupButtonGroupForTv(
+            listOf(positiveButton, negativeButton, neutralButton),
+            TvUtils.NavigationOrientation.HORIZONTAL,
+            circular = true
+        )
+        
+        // Request focus on video call button (primary action for TV)
+        positiveButton.post {
+            positiveButton.requestFocus()
         }
     }
 
