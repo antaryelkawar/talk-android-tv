@@ -2006,12 +2006,6 @@ class ChatActivity :
                     messageInputFragment.binding.fragmentMessageInputView.requestFocus()
                     return true
                 }
-                android.view.KeyEvent.KEYCODE_BACK -> {
-                    // Handle back navigation properly
-                    if (TvNavigationHelper.handleDpadBack(this, currentFocus)) {
-                        return true
-                    }
-                }
             }
         }
         return super.onKeyDown(keyCode, event)
