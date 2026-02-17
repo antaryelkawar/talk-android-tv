@@ -10,9 +10,18 @@
 package com.nextcloud.talk.account
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.webkit.CookieManager
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.FrameLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
@@ -49,8 +58,15 @@ class BrowserLoginActivity : BaseActivity() {
 
     private var isTvMode = false
 
+    private var webView: WebView? = null
+    private var useWebViewFallback = false
+
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
+            if (useWebViewFallback && webView?.canGoBack() == true) {
+                webView?.goBack()
+                return
+            }
             val intent = Intent(context, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
@@ -98,7 +114,7 @@ class BrowserLoginActivity : BaseActivity() {
                             } else {
                                 viewModel.setWaitingForBrowser(true)
                                 if (isTvMode) {
-                                    launchCustomTab(state.loginUrl)
+                                    launchTvLogin(state.loginUrl)
                                 } else {
                                     launchDefaultWebBrowser(state.loginUrl)
                                 }
@@ -177,6 +193,15 @@ class BrowserLoginActivity : BaseActivity() {
         }
     }
 
+    private fun launchTvLogin(url: String) {
+        try {
+            launchCustomTab(url)
+        } catch (e: ActivityNotFoundException) {
+            Log.i(TAG, "No browser available for Custom Tabs, falling back to WebView")
+            launchWebViewFallback(url)
+        }
+    }
+
     private fun launchCustomTab(url: String) {
         val colorSchemeParams = CustomTabColorSchemeParams.Builder()
             .setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary))
@@ -188,6 +213,48 @@ class BrowserLoginActivity : BaseActivity() {
             .build()
 
         customTabsIntent.launchUrl(this, url.toUri())
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun launchWebViewFallback(url: String) {
+        useWebViewFallback = true
+
+        binding.cancelDesc.visibility = View.GONE
+        binding.progressBar.visibility = View.VISIBLE
+
+        val wv = WebView(this)
+        wv.layoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        )
+
+        wv.settings.javaScriptEnabled = true
+        wv.settings.domStorageEnabled = true
+        wv.settings.setSupportMultipleWindows(false)
+        wv.settings.javaScriptCanOpenWindowsAutomatically = true
+
+        CookieManager.getInstance().setAcceptCookie(true)
+        CookieManager.getInstance().setAcceptThirdPartyCookies(wv, true)
+
+        wv.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, pageUrl: String?) {
+                super.onPageFinished(view, pageUrl)
+                binding.progressBar.visibility = View.GONE
+                wv.visibility = View.VISIBLE
+            }
+
+            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                return false
+            }
+        }
+
+        wv.webChromeClient = WebChromeClient()
+
+        wv.visibility = View.GONE
+        (binding.root as android.view.ViewGroup).addView(wv, 0)
+        webView = wv
+
+        wv.loadUrl(url)
     }
 
     private fun launchDefaultWebBrowser(url: String) {
@@ -209,6 +276,7 @@ class BrowserLoginActivity : BaseActivity() {
     }
 
     public override fun onDestroy() {
+        webView?.destroy()
         super.onDestroy()
     }
 

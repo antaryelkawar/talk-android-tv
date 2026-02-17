@@ -905,6 +905,9 @@ How to translate with transifex:
     <string name="location_services_disabled">Location services disabled</string>
     <string name="location_services_disabled_msg">Please enable location services (GPS) to use this feature</string>
     <string name="please_continue_the_login_process_in_the_browser">Please continue login in browser</string>
+    <string name="tv_login_scan_qr_title">Sign in with your phone</string>
+    <string name="tv_login_scan_qr_subtitle">Scan this QR code with your phone camera\nand complete the login there</string>
+    <string name="tv_login_qr_code_description">QR code to sign in</string>
     <string name="pin_message">Pin message</string>
     <string name="unpin_message">Unpin message</string>
     <string name="pin_24hr">Pin for 24 hours</string>
