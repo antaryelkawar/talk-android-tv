@@ -5,70 +5,144 @@
   ~ SPDX-FileCopyrightText: 2025 Nextcloud GmbH and Nextcloud contributors
   ~ SPDX-License-Identifier: GPL-3.0-or-later
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     android:keepScreenOn="true">
 
+    <!-- QR code login screen -->
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:id="@+id/tv_qr_login_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="center"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:padding="@dimen/standard_double_margin">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_login_title"
-            android:layout_width="wrap_content"
+        <!-- Left side: QR code -->
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/standard_margin"
-            android:text="@string/tv_login_scan_qr_title"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/tv_qr_code_image"
-            android:layout_width="280dp"
-            android:layout_height="280dp"
-            android:layout_marginTop="@dimen/standard_margin"
-            android:layout_marginBottom="@dimen/standard_margin"
-            android:background="@color/white"
-            android:contentDescription="@string/tv_login_qr_code_description"
-            android:padding="8dp"
-            android:visibility="gone" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_login_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/standard_margin"
+                android:text="@string/tv_login_scan_qr_title"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/progress_bar"
-            android:layout_width="@dimen/item_height"
-            android:layout_height="@dimen/item_height"
-            android:layout_marginTop="@dimen/standard_margin"
-            android:layout_marginBottom="@dimen/standard_margin"
-            android:indeterminate="true"
-            android:indeterminateTint="@color/white"
-            android:indeterminateTintMode="src_in" />
+            <ImageView
+                android:id="@+id/tv_qr_code_image"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:layout_marginTop="@dimen/standard_margin"
+                android:layout_marginBottom="@dimen/standard_margin"
+                android:background="@color/white"
+                android:contentDescription="@string/tv_login_qr_code_description"
+                android:padding="8dp"
+                android:visibility="gone" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/cancel_desc"
-            android:layout_width="wrap_content"
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progress_bar"
+                android:layout_width="@dimen/item_height"
+                android:layout_height="@dimen/item_height"
+                android:layout_marginTop="@dimen/standard_margin"
+                android:layout_marginBottom="@dimen/standard_margin"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/white"
+                android:indeterminateTintMode="src_in" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/cancel_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/standard_half_margin"
+                android:text="@string/tv_login_scan_qr_subtitle"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <!-- Right side: alternative options -->
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/standard_half_margin"
-            android:text="@string/tv_login_scan_qr_subtitle"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/standard_double_margin"
+            android:paddingEnd="@dimen/standard_double_margin">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/cancel_login_btn"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/standard_double_margin"
-            android:text="@string/cancel_login" />
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/standard_double_margin"
+                android:text="@string/tv_login_or"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/tv_login_with_browser_btn"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/standard_margin"
+                android:text="@string/tv_login_with_browser"
+                android:textColor="@color/white" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/cancel_login_btn"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:text="@string/cancel_login"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
-</RelativeLayout>
+    <!-- WebView login screen (hidden by default) -->
+    <LinearLayout
+        android:id="@+id/tv_webview_login_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <WebView
+            android:id="@+id/tv_login_webview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:padding="@dimen/standard_half_padding">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/tv_webview_back_btn"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tv_login_back_to_qr"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

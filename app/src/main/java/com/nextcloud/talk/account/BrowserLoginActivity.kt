@@ -10,9 +10,10 @@
 package com.nextcloud.talk.account
 
 import android.annotation.SuppressLint
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -21,17 +22,19 @@ import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
-import androidx.browser.customtabs.CustomTabColorSchemeParams
-import androidx.browser.customtabs.CustomTabsIntent
-import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import autodagger.AutoInjector
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.EncodeHintType
+import com.google.zxing.qrcode.QRCodeWriter
 import com.nextcloud.talk.R
 import com.nextcloud.talk.account.data.LoginRepository
 import com.nextcloud.talk.account.viewmodels.BrowserLoginActivityViewModel
@@ -57,15 +60,22 @@ class BrowserLoginActivity : BaseActivity() {
     private var reauthorizeAccount = false
 
     private var isTvMode = false
-
-    private var webView: WebView? = null
-    private var useWebViewFallback = false
+    private var tvQrShown = false
+    private var tvLoginUrl: String? = null
+    private var tvWebView: WebView? = null
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            if (useWebViewFallback && webView?.canGoBack() == true) {
-                webView?.goBack()
-                return
+            if (isTvMode) {
+                val webViewContainer = findViewById<LinearLayout>(R.id.tv_webview_login_container)
+                if (webViewContainer?.visibility == View.VISIBLE) {
+                    if (tvWebView?.canGoBack() == true) {
+                        tvWebView?.goBack()
+                        return
+                    }
+                    showTvQrScreen()
+                    return
+                }
             }
             val intent = Intent(context, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -108,14 +118,19 @@ class BrowserLoginActivity : BaseActivity() {
                         }
 
                         is BrowserLoginActivityViewModel.InitialLoginViewState.InitialLoginRequestSuccess -> {
-                            if (viewModel.waitingForBrowserState.value) {
-                                viewModel.setWaitingForBrowser(false)
-                                viewModel.handleWebBrowserLogin()
+                            if (isTvMode) {
+                                if (!tvQrShown) {
+                                    tvQrShown = true
+                                    tvLoginUrl = state.loginUrl
+                                    showQrCode(state.loginUrl)
+                                    viewModel.handleWebBrowserLogin()
+                                }
                             } else {
-                                viewModel.setWaitingForBrowser(true)
-                                if (isTvMode) {
-                                    launchTvLogin(state.loginUrl)
+                                if (viewModel.waitingForBrowserState.value) {
+                                    viewModel.setWaitingForBrowser(false)
+                                    viewModel.handleWebBrowserLogin()
                                 } else {
+                                    viewModel.setWaitingForBrowser(true)
                                     launchDefaultWebBrowser(state.loginUrl)
                                 }
                             }
@@ -183,78 +198,117 @@ class BrowserLoginActivity : BaseActivity() {
         }
 
         if (isTvMode) {
-            binding.cancelLoginBtn.isFocusable = true
-            binding.cancelLoginBtn.isFocusableInTouchMode = false
-            binding.cancelLoginBtn.requestFocus()
-            TvUtils.applyTvFocusHighlight(
-                binding.cancelLoginBtn,
-                resources.getColor(R.color.colorPrimary, null)
-            )
+            initTvViews()
         }
     }
 
-    private fun launchTvLogin(url: String) {
-        try {
-            launchCustomTab(url)
-        } catch (e: ActivityNotFoundException) {
-            Log.i(TAG, "No browser available for Custom Tabs, falling back to WebView")
-            launchWebViewFallback(url)
+    private fun initTvViews() {
+        val focusColor = resources.getColor(R.color.colorPrimary, null)
+
+        val browserBtn = findViewById<MaterialButton>(R.id.tv_login_with_browser_btn)
+        browserBtn?.let {
+            it.isFocusable = true
+            it.isFocusableInTouchMode = false
+            TvUtils.applyTvFocusHighlight(it, focusColor)
+            it.setOnClickListener { showTvWebViewScreen() }
+            it.requestFocus()
         }
-    }
 
-    private fun launchCustomTab(url: String) {
-        val colorSchemeParams = CustomTabColorSchemeParams.Builder()
-            .setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary))
-            .build()
+        val backBtn = findViewById<MaterialButton>(R.id.tv_webview_back_btn)
+        backBtn?.let {
+            it.isFocusable = true
+            it.isFocusableInTouchMode = false
+            TvUtils.applyTvFocusHighlight(it, focusColor)
+            it.setOnClickListener { showTvQrScreen() }
+        }
 
-        val customTabsIntent = CustomTabsIntent.Builder()
-            .setDefaultColorSchemeParams(colorSchemeParams)
-            .setShowTitle(true)
-            .build()
+        binding.cancelLoginBtn.isFocusable = true
+        binding.cancelLoginBtn.isFocusableInTouchMode = false
+        TvUtils.applyTvFocusHighlight(binding.cancelLoginBtn, focusColor)
 
-        customTabsIntent.launchUrl(this, url.toUri())
+        setupTvWebView()
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private fun launchWebViewFallback(url: String) {
-        useWebViewFallback = true
+    private fun setupTvWebView() {
+        tvWebView = findViewById(R.id.tv_login_webview)
+        tvWebView?.let { wv ->
+            wv.settings.javaScriptEnabled = true
+            wv.settings.domStorageEnabled = true
+            wv.settings.setSupportMultipleWindows(false)
+            wv.settings.javaScriptCanOpenWindowsAutomatically = true
 
-        binding.cancelDesc.visibility = View.GONE
-        binding.progressBar.visibility = View.VISIBLE
+            CookieManager.getInstance().setAcceptCookie(true)
+            CookieManager.getInstance().setAcceptThirdPartyCookies(wv, true)
 
-        val wv = WebView(this)
-        wv.layoutParams = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.MATCH_PARENT
-        )
-
-        wv.settings.javaScriptEnabled = true
-        wv.settings.domStorageEnabled = true
-        wv.settings.setSupportMultipleWindows(false)
-        wv.settings.javaScriptCanOpenWindowsAutomatically = true
-
-        CookieManager.getInstance().setAcceptCookie(true)
-        CookieManager.getInstance().setAcceptThirdPartyCookies(wv, true)
-
-        wv.webViewClient = object : WebViewClient() {
-            override fun onPageFinished(view: WebView?, pageUrl: String?) {
-                super.onPageFinished(view, pageUrl)
-                binding.progressBar.visibility = View.GONE
-                wv.visibility = View.VISIBLE
+            wv.webViewClient = object : WebViewClient() {
+                override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                    return false
+                }
             }
-
-            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                return false
-            }
+            wv.webChromeClient = WebChromeClient()
         }
+    }
 
-        wv.webChromeClient = WebChromeClient()
+    private fun showTvWebViewScreen() {
+        val url = tvLoginUrl ?: return
+        val qrContainer = findViewById<LinearLayout>(R.id.tv_qr_login_container)
+        val webViewContainer = findViewById<LinearLayout>(R.id.tv_webview_login_container)
 
-        wv.visibility = View.GONE
-        (binding.root as android.view.ViewGroup).addView(wv, 0)
-        webView = wv
+        qrContainer?.visibility = View.GONE
+        webViewContainer?.visibility = View.VISIBLE
 
-        wv.loadUrl(url)
+        tvWebView?.loadUrl(url)
+    }
+
+    private fun showTvQrScreen() {
+        val qrContainer = findViewById<LinearLayout>(R.id.tv_qr_login_container)
+        val webViewContainer = findViewById<LinearLayout>(R.id.tv_webview_login_container)
+
+        webViewContainer?.visibility = View.GONE
+        qrContainer?.visibility = View.VISIBLE
+
+        findViewById<MaterialButton>(R.id.tv_login_with_browser_btn)?.requestFocus()
+    }
+
+    @Suppress("MagicNumber")
+    private fun showQrCode(loginUrl: String) {
+        Log.d(TAG, "showQrCode called with URL length: ${loginUrl.length}")
+        val qrCodeImage = findViewById<ImageView>(R.id.tv_qr_code_image)
+        if (qrCodeImage != null) {
+            binding.progressBar.visibility = View.GONE
+            val bitmap = generateQrCode(loginUrl, QR_CODE_SIZE)
+            if (bitmap != null) {
+                qrCodeImage.setImageBitmap(bitmap)
+                qrCodeImage.visibility = View.VISIBLE
+                Log.d(TAG, "QR code displayed successfully")
+            } else {
+                Log.e(TAG, "Failed to generate QR code bitmap")
+            }
+        } else {
+            Log.w(TAG, "tv_qr_code_image not found in layout, falling back to browser")
+            launchDefaultWebBrowser(loginUrl)
+        }
+    }
+
+    @Suppress("MagicNumber")
+    private fun generateQrCode(content: String, size: Int): Bitmap? {
+        return try {
+            val hints = mapOf(
+                EncodeHintType.MARGIN to 1,
+                EncodeHintType.CHARACTER_SET to "UTF-8"
+            )
+            val bitMatrix = QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, size, size, hints)
+            val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565)
+            for (x in 0 until size) {
+                for (y in 0 until size) {
+                    bitmap.setPixel(x, y, if (bitMatrix.get(x, y)) Color.BLACK else Color.WHITE)
+                }
+            }
+            bitmap
+        } catch (e: Exception) {
+            null
+        }
     }
 
     private fun launchDefaultWebBrowser(url: String) {
@@ -276,7 +330,7 @@ class BrowserLoginActivity : BaseActivity() {
     }
 
     public override fun onDestroy() {
-        webView?.destroy()
+        tvWebView?.destroy()
         super.onDestroy()
     }
 
@@ -285,5 +339,6 @@ class BrowserLoginActivity : BaseActivity() {
 
     companion object {
         private val TAG = BrowserLoginActivity::class.java.simpleName
+        private const val QR_CODE_SIZE = 512
     }
 }
