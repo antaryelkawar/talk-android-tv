@@ -1225,60 +1225,35 @@ class ConversationsListActivity :
             }
             false
         }
-        if (isTvMode) {
-                        binding.swipeRefreshLayoutView.isEnabled = false
-                        binding.swipeRefreshLayoutView.isFocusable = false
-                        binding.swipeRefreshLayoutView.descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
-                        binding.floatingActionButton.visibility = View.GONE
-            
-                        // Setup toolbar for TV - makes toolbar buttons focusable
-                        TvNavigationHelper.setupToolbarForTv(binding.conversationListAppbar)            
-                        // Setup RecyclerView for TV
-                        TvUtils.setupRecyclerViewForTv(
-                            binding.recyclerView,
-                            resources.getColor(R.color.colorPrimary, null)
-                        )
-                        
-                        // Allow focus to escape RecyclerView
-                        binding.recyclerView.descendantFocusability = ViewGroup.FOCUS_BEFORE_DESCENDANTS
-            
-                        // Setup bottom buttons for TV navigation
-                        val tvButtons = listOfNotNull(
-                            binding.switchAccountButton,
-                            binding.filterConversationsButton,
-                            binding.threadsButton
-                        )
-                        TvNavigationHelper.setupButtonGroupForTv(
-                            tvButtons,
-                            TvUtils.NavigationOrientation.HORIZONTAL,
-                            circular = false
-                        )
-                        
-                        // Link RecyclerView with toolbar and bottom buttons using standard Android focus navigation
-                        if (tvButtons.isNotEmpty()) {
-                            binding.recyclerView.nextFocusDownId = tvButtons[0].id
-                            tvButtons.forEach { button ->
-                                button.nextFocusUpId = binding.recyclerView.id
-                            }
-                        }
-                        
-                        // Find first focusable toolbar item and link it
-                        for (i in 0 until binding.conversationListAppbar.childCount) {
-                            val child = binding.conversationListAppbar.getChildAt(i)
-                            if (child.isFocusable) {
-                                child.nextFocusDownId = binding.recyclerView.id
-                                binding.recyclerView.nextFocusUpId = child.id
-                                break
-                            }
-                        }
-            
-                        // Request focus on first item after layout
-                        binding.recyclerView.post {
-                            TvNavigationHelper.requestFocusOnFirstVisibleItem(binding.recyclerView)
-                        }            
-            // Ensure RecyclerView gets focus priority
-            binding.recyclerView.requestFocus()
-        } else {
+                if (isTvMode) {
+                    // Disable swipe refresh for TV
+                    binding.swipeRefreshLayoutView.isEnabled = false
+                    binding.floatingActionButton.visibility = View.GONE
+        
+                    // Setup toolbar buttons to be focusable
+                    TvNavigationHelper.setupToolbarForTv(binding.conversationListAppbar)
+                    
+                    // Setup RecyclerView for TV - makes items focusable with focus highlights
+                    TvUtils.setupRecyclerViewForTv(
+                        binding.recyclerView,
+                        resources.getColor(R.color.colorPrimary, null)
+                    )
+        
+                    // Make bottom buttons focusable
+                    listOf(
+                        binding.switchAccountButton,
+                        binding.filterConversationsButton,
+                        binding.threadsButton
+                    ).forEach { button ->
+                        button.isFocusable = true
+                        button.isFocusableInTouchMode = false
+                    }
+        
+                    // Request focus after adapter is set and items are loaded
+                    binding.recyclerView.postDelayed({
+                        val firstChild = binding.recyclerView.getChildAt(0)
+                        firstChild?.requestFocus() ?: binding.recyclerView.requestFocus()
+                    }, 100)        } else {
             binding.swipeRefreshLayoutView.setOnRefreshListener {
                 showMaintenanceModeWarning(false)
                 fetchRooms()
@@ -1432,35 +1407,14 @@ class ConversationsListActivity :
                     showNewConversationsScreen()
                     return true
                 }
-                android.view.KeyEvent.KEYCODE_SEARCH -> {
-                    // Activate search
-                    searchItem?.let { showSearchView(searchView, it) }
-                    return true
-                }
-                android.view.KeyEvent.KEYCODE_DPAD_UP -> {
-                    // Handle D-pad up in RecyclerView
-                    if (binding.recyclerView.hasFocus() || 
-                        binding.recyclerView.focusedChild != null) {
-                        return TvNavigationHelper.handleRecyclerViewDpadNavigation(
-                            binding.recyclerView,
-                            keyCode
-                        )
-                    }
-                }
-                android.view.KeyEvent.KEYCODE_DPAD_DOWN -> {
-                    // Handle D-pad down in RecyclerView
-                    if (binding.recyclerView.hasFocus() || 
-                        binding.recyclerView.focusedChild != null) {
-                        return TvNavigationHelper.handleRecyclerViewDpadNavigation(
-                            binding.recyclerView,
-                            keyCode
-                        )
-                    }
-                }
-            }
-        }
-        return super.onKeyDown(keyCode, event)
-    }
+                                android.view.KeyEvent.KEYCODE_SEARCH -> {
+                                    // Activate search
+                                    searchItem?.let { showSearchView(searchView, it) }
+                                    return true
+                                }
+                            }
+                        }
+                        return super.onKeyDown(keyCode, event)    }
 
     public override fun onDestroy() {
         super.onDestroy()

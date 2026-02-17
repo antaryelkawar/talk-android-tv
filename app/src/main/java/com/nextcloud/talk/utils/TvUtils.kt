@@ -171,6 +171,7 @@ object TvUtils {
                 override fun onChildViewAttachedToWindow(view: View) {
                     view.isFocusable = true
                     view.isFocusableInTouchMode = false
+                    view.isClickable = true  // Required for TV focus
                     val originalBackground = view.background
                     view.setOnFocusChangeListener { v, hasFocus ->
                         if (hasFocus) {
