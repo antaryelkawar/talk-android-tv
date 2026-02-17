@@ -14,6 +14,9 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
+import androidx.browser.customtabs.CustomTabColorSchemeParams
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -59,15 +62,13 @@ class BrowserLoginActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         sharedApplication!!.componentApplication.inject(this)
         binding = ActivityWebViewLoginBinding.inflate(layoutInflater)
-        
-        // Detect TV mode
+
         isTvMode = TvUtils.isTvMode(this)
-        
-        // Don't lock orientation on TV
+
         if (!isTvMode) {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
-        
+
         setContentView(binding.root)
         actionBar?.hide()
         initSystemBars()
@@ -96,7 +97,11 @@ class BrowserLoginActivity : BaseActivity() {
                                 viewModel.handleWebBrowserLogin()
                             } else {
                                 viewModel.setWaitingForBrowser(true)
-                                launchDefaultWebBrowser(state.loginUrl)
+                                if (isTvMode) {
+                                    launchCustomTab(state.loginUrl)
+                                } else {
+                                    launchDefaultWebBrowser(state.loginUrl)
+                                }
                             }
                         }
 
@@ -170,6 +175,19 @@ class BrowserLoginActivity : BaseActivity() {
                 resources.getColor(R.color.colorPrimary, null)
             )
         }
+    }
+
+    private fun launchCustomTab(url: String) {
+        val colorSchemeParams = CustomTabColorSchemeParams.Builder()
+            .setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary))
+            .build()
+
+        val customTabsIntent = CustomTabsIntent.Builder()
+            .setDefaultColorSchemeParams(colorSchemeParams)
+            .setShowTitle(true)
+            .build()
+
+        customTabsIntent.launchUrl(this, url.toUri())
     }
 
     private fun launchDefaultWebBrowser(url: String) {
