@@ -298,7 +298,7 @@ object TvNavigationHelper {
     /**
      * Setup toolbar/actionbar buttons for TV with proper focus handling
      */
-    fun setupToolbarForTv(toolbar: View, firstFocusableView: View? = null) {
+    fun setupToolbarForTv(toolbar: ViewGroup, firstFocusableView: View? = null) {
         toolbar.isFocusable = false
         toolbar.descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
         
