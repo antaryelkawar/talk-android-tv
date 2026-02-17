@@ -150,7 +150,22 @@ object TvUtils {
         return Pair(1920, 1080)
     }
 
-    fun makeRecyclerViewItemsFocusable(recyclerView: RecyclerView, @ColorInt focusColor: Int) {
+    @Suppress("MagicNumber")
+    fun setupRecyclerViewForTv(recyclerView: RecyclerView, @ColorInt focusColor: Int) {
+        recyclerView.descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
+        recyclerView.isFocusable = true
+        recyclerView.isFocusableInTouchMode = false
+        recyclerView.setItemViewCacheSize(20)
+        recyclerView.clipToPadding = false
+        recyclerView.clipChildren = false
+
+        var parentGroup: ViewGroup? = recyclerView.parent as? ViewGroup
+        while (parentGroup != null) {
+            parentGroup.clipChildren = false
+            parentGroup.clipToPadding = false
+            parentGroup = parentGroup.parent as? ViewGroup
+        }
+
         recyclerView.addOnChildAttachStateChangeListener(
             object : RecyclerView.OnChildAttachStateChangeListener {
                 override fun onChildViewAttachedToWindow(view: View) {
@@ -171,6 +186,11 @@ object TvUtils {
                             v.scaleX = 1.02f
                             v.scaleY = 1.02f
                             v.elevation = 4f
+
+                            val parent = v.parent
+                            if (parent is RecyclerView) {
+                                parent.smoothScrollToPosition(parent.getChildAdapterPosition(v))
+                            }
                         } else {
                             v.background = originalBackground
                             v.scaleX = 1.0f
@@ -185,6 +205,11 @@ object TvUtils {
                 }
             }
         )
+    }
+
+    @Deprecated("Use setupRecyclerViewForTv instead", ReplaceWith("setupRecyclerViewForTv(recyclerView, focusColor)"))
+    fun makeRecyclerViewItemsFocusable(recyclerView: RecyclerView, @ColorInt focusColor: Int) {
+        setupRecyclerViewForTv(recyclerView, focusColor)
     }
 
     fun setupScrollViewDpadNavigation(scrollView: ScrollView) {

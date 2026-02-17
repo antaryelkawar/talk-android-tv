@@ -1892,13 +1892,24 @@ class ChatActivity :
     @Suppress("MagicNumber")
     override fun onKeyDown(keyCode: Int, event: android.view.KeyEvent?): Boolean {
         if (isTvMode) {
+            val scrollAmount = binding.messagesListView.height / 3
             when (keyCode) {
                 android.view.KeyEvent.KEYCODE_DPAD_UP -> {
-                    binding.messagesListView.scrollBy(0, -150)
+                    binding.messagesListView.smoothScrollBy(0, -scrollAmount)
                     return true
                 }
                 android.view.KeyEvent.KEYCODE_DPAD_DOWN -> {
-                    binding.messagesListView.scrollBy(0, 150)
+                    binding.messagesListView.smoothScrollBy(0, scrollAmount)
+                    return true
+                }
+                android.view.KeyEvent.KEYCODE_PAGE_UP,
+                android.view.KeyEvent.KEYCODE_CHANNEL_UP -> {
+                    binding.messagesListView.smoothScrollBy(0, -binding.messagesListView.height)
+                    return true
+                }
+                android.view.KeyEvent.KEYCODE_PAGE_DOWN,
+                android.view.KeyEvent.KEYCODE_CHANNEL_DOWN -> {
+                    binding.messagesListView.smoothScrollBy(0, binding.messagesListView.height)
                     return true
                 }
                 android.view.KeyEvent.KEYCODE_MENU -> {

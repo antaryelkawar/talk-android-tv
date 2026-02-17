@@ -20,6 +20,8 @@
         android:elevation="0dp"
         android:clipChildren="true"
         android:clipToPadding="false"
+        android:focusable="false"
+        android:descendantFocusability="blocksDescendants"
         android:windowContentOverlay="@null"
         app:elevation="0dp"
         app:liftOnScrollTargetViewId="@id/recycler_view"
@@ -290,12 +292,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:enabled="false"
+        android:focusable="false"
+        android:descendantFocusability="afterDescendants"
         android:visibility="gone"
         app:layout_behavior="com.nextcloud.talk.utils.FABAwareScrollingViewBehavior">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:focusable="false"
+            android:descendantFocusability="afterDescendants"
             android:orientation="vertical">
 
             <include
@@ -310,8 +316,13 @@
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:descendantFocusability="afterDescendants"
                 android:paddingStart="24dp"
-                android:paddingEnd="24dp" />
+                android:paddingTop="8dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="8dp" />
 
         </LinearLayout>
 

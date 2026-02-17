@@ -29,6 +29,8 @@ import com.nextcloud.talk.api.NcApi
 import com.nextcloud.talk.application.NextcloudTalkApplication
 import com.nextcloud.talk.chat.ChatActivity
 import com.nextcloud.talk.conversationlist.ConversationsListActivity
+import com.nextcloud.talk.conversationlist.TvConversationListActivity
+import com.nextcloud.talk.utils.TvUtils
 import com.nextcloud.talk.data.user.model.User
 import com.nextcloud.talk.databinding.ActivityMainBinding
 import com.nextcloud.talk.invitation.InvitationsActivity
@@ -141,7 +143,12 @@ class MainActivity :
     }
 
     private fun openConversationList() {
-        val intent = Intent(this, ConversationsListActivity::class.java)
+        val targetClass = if (TvUtils.isTvMode(this)) {
+            TvConversationListActivity::class.java
+        } else {
+            ConversationsListActivity::class.java
+        }
+        val intent = Intent(this, targetClass)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.putExtras(Bundle())
         startActivity(intent)
