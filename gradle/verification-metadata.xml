@@ -300,6 +300,7 @@
             <trusting group="androidx.startup" name="startup-runtime" version="1.2.0"/>
             <trusting group="androidx.test"/>
             <trusting group="androidx.transition" name="transition" version="1.5.0"/>
+            <trusting group="androidx.tv"/>
             <trusting group="androidx.webkit"/>
             <trusting group="androidx.work"/>
             <trusting group="^androidx[.]compose($|([.].*))" regex="true"/>
