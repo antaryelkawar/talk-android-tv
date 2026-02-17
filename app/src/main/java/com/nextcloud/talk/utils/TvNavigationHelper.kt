@@ -26,11 +26,13 @@ object TvNavigationHelper {
 
     /**
      * Enhanced D-pad handler for RecyclerView with smooth scrolling and focus management
+     * @param isReverseLayout Set to true for RecyclerViews with reverse layout (like chat messages)
      */
     fun handleRecyclerViewDpadNavigation(
         recyclerView: RecyclerView,
         keyCode: Int,
-        enableHorizontalScroll: Boolean = false
+        enableHorizontalScroll: Boolean = false,
+        isReverseLayout: Boolean = false
     ): Boolean {
         val layoutManager = recyclerView.layoutManager ?: return false
         val currentFocus = recyclerView.focusedChild
@@ -40,8 +42,12 @@ object TvNavigationHelper {
             0
         }
 
+        // Invert navigation for reverse layout lists (newest items at top)
+        val upKey = if (isReverseLayout) KeyEvent.KEYCODE_DPAD_DOWN else KeyEvent.KEYCODE_DPAD_UP
+        val downKey = if (isReverseLayout) KeyEvent.KEYCODE_DPAD_UP else KeyEvent.KEYCODE_DPAD_DOWN
+
         return when (keyCode) {
-            KeyEvent.KEYCODE_DPAD_UP -> {
+            upKey -> {
                 if (currentPosition > 0) {
                     recyclerView.smoothScrollToPosition(currentPosition - 1)
                     recyclerView.post {
@@ -50,7 +56,7 @@ object TvNavigationHelper {
                 }
                 true
             }
-            KeyEvent.KEYCODE_DPAD_DOWN -> {
+            downKey -> {
                 val itemCount = recyclerView.adapter?.itemCount ?: 0
                 if (currentPosition < itemCount - 1) {
                     recyclerView.smoothScrollToPosition(currentPosition + 1)
@@ -297,13 +303,20 @@ object TvNavigationHelper {
 
     /**
      * Setup toolbar/actionbar buttons for TV with proper focus handling
+     * Makes toolbar children focusable but not the toolbar itself
      */
-    fun setupToolbarForTv(toolbar: ViewGroup, firstFocusableView: View? = null) {
+    fun setupToolbarForTv(toolbar: ViewGroup) {
         toolbar.isFocusable = false
-        toolbar.descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
+        // Allow focus to reach toolbar children but not the toolbar itself
+        toolbar.descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
         
-        firstFocusableView?.let {
-            it.requestFocus()
+        // Make all clickable children in toolbar focusable for TV
+        for (i in 0 until toolbar.childCount) {
+            val child = toolbar.getChildAt(i)
+            if (child.isClickable || child is android.widget.ImageButton) {
+                child.isFocusable = true
+                child.isFocusableInTouchMode = false
+            }
         }
     }
 

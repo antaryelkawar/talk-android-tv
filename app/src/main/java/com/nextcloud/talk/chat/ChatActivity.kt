@@ -1542,12 +1542,12 @@ class ChatActivity :
             binding.scrollDownButton.visibility = View.GONE
             binding.voiceRecordingLock.visibility = View.GONE
             
-            // Setup toolbar for TV
+            // Setup toolbar for TV - makes toolbar buttons focusable
             TvNavigationHelper.setupToolbarForTv(binding.chatToolbar)
             
             // Request focus on messages list after layout
             binding.messagesListView.post {
-                TvNavigationHelper.requestFocusOnLastVisibleItem(binding.messagesListView)
+                TvNavigationHelper.requestFocusOnFirstVisibleItem(binding.messagesListView)
             }
         }
 
@@ -1934,18 +1934,18 @@ class ChatActivity :
             
             when (keyCode) {
                 android.view.KeyEvent.KEYCODE_DPAD_UP -> {
-                    return when {
-                        isMessageInputFocused() -> {
-                            TvNavigationHelper.requestFocusOnLastVisibleItem(binding.messagesListView)
-                            true
-                        }
-                        isMessagesListFocused() -> {
-                            TvNavigationHelper.handleRecyclerViewDpadNavigation(
-                                binding.messagesListView,
-                                keyCode
-                            )
-                        }
-                        else -> {
+                                    return when {
+                                        isMessageInputFocused() -> {
+                                            TvNavigationHelper.requestFocusOnLastVisibleItem(binding.messagesListView)
+                                            true
+                                        }
+                                        isMessagesListFocused() -> {
+                                            TvNavigationHelper.handleRecyclerViewDpadNavigation(
+                                                binding.messagesListView,
+                                                keyCode,
+                                                isReverseLayout = true
+                                            )
+                                        }                        else -> {
                             binding.messagesListView.smoothScrollBy(0, -scrollAmount)
                             true
                         }
@@ -1956,7 +1956,8 @@ class ChatActivity :
                         isMessagesListFocused() -> {
                             val handled = TvNavigationHelper.handleRecyclerViewDpadNavigation(
                                 binding.messagesListView,
-                                keyCode
+                                keyCode,
+                                isReverseLayout = true
                             )
                             if (!handled) {
                                 messageInputFragment.binding.fragmentMessageInputView.requestFocus()

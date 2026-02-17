@@ -32,6 +32,8 @@ import com.nextcloud.talk.utils.ApiUtils
 import com.nextcloud.talk.utils.CapabilitiesUtil.hasSpreedFeatureCapability
 import com.nextcloud.talk.utils.NotificationUtils
 import com.nextcloud.talk.utils.SpreedFeatures
+import com.nextcloud.talk.utils.TvUtils
+import com.nextcloud.talk.utils.TvNavigationHelper
 import com.nextcloud.talk.utils.bundle.BundleKeys
 import com.nextcloud.talk.utils.bundle.BundleKeys.KEY_CALL_VOICE_ONLY
 import com.nextcloud.talk.utils.bundle.BundleKeys.KEY_ROOM_ONE_TO_ONE
@@ -81,7 +83,44 @@ class CallNotificationActivity : CallBaseActivity() {
         binding!!.conversationNameTextView.text = displayName
         setupAvatar(isOneToOneCall, conversationName)
         initClickListeners()
+        setupTvModeIfNeeded()
         setupNotificationCanceledRoutine()
+    }
+
+    private fun setupTvModeIfNeeded() {
+        if (TvUtils.isTvMode(this)) {
+            // Make all answer buttons focusable for TV
+            binding!!.callAnswerVoiceOnlyView.isFocusable = true
+            binding!!.callAnswerVoiceOnlyView.isFocusableInTouchMode = false
+            
+            binding!!.hangupButton.isFocusable = true
+            binding!!.hangupButton.isFocusableInTouchMode = false
+            
+            binding!!.callAnswerCameraView.isFocusable = true
+            binding!!.callAnswerCameraView.isFocusableInTouchMode = false
+            
+            // Setup D-pad navigation between buttons
+            TvNavigationHelper.setupButtonGroupForTv(
+                listOf(
+                    binding!!.callAnswerVoiceOnlyView,
+                    binding!!.hangupButton,
+                    binding!!.callAnswerCameraView
+                ),
+                TvUtils.NavigationOrientation.HORIZONTAL,
+                circular = true
+            )
+            
+            // Apply focus highlight to buttons
+            val focusColor = resources.getColor(R.color.colorPrimary, null)
+            TvUtils.applyTvFocusHighlight(binding!!.callAnswerVoiceOnlyView, focusColor)
+            TvUtils.applyTvFocusHighlight(binding!!.hangupButton, focusColor)
+            TvUtils.applyTvFocusHighlight(binding!!.callAnswerCameraView, focusColor)
+            
+            // Request focus on video answer button (primary action for TV)
+            binding!!.callAnswerCameraView.post {
+                binding!!.callAnswerCameraView.requestFocus()
+            }
+        }
     }
 
     private fun handleExtras() {
