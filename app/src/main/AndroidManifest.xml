@@ -137,10 +137,6 @@
         </activity>
 
         <activity
-            android:name=".conversationlist.TvConversationListActivity"
-            android:theme="@style/AppTheme" />
-
-        <activity
             android:name=".account.ServerSelectionActivity"
             android:theme="@style/AppTheme" />
 

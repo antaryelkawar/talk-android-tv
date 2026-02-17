@@ -1530,6 +1530,26 @@ class ChatActivity :
 
         binding.let { viewThemeUtils.material.colorMaterialButtonPrimaryFilled(it.unreadMessagesPopup) }
 
+        // Setup TV mode for messages RecyclerView
+        if (isTvMode) {
+            TvUtils.setupRecyclerViewForTv(
+                binding.messagesListView,
+                resources.getColor(R.color.colorPrimary, null)
+            )
+            
+            // Hide floating action buttons for TV
+            binding.scrollDownButton.visibility = View.GONE
+            binding.voiceRecordingLock.visibility = View.GONE
+            
+            // Setup toolbar for TV
+            TvNavigationHelper.setupToolbarForTv(binding.chatToolbar)
+            
+            // Request focus on messages list after layout
+            binding.messagesListView.post {
+                TvNavigationHelper.requestFocusOnLastVisibleItem(binding.messagesListView)
+            }
+        }
+
         binding.messagesListView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
@@ -1893,28 +1913,86 @@ class ChatActivity :
     override fun onKeyDown(keyCode: Int, event: android.view.KeyEvent?): Boolean {
         if (isTvMode) {
             val scrollAmount = binding.messagesListView.height / 3
+            val currentFocus = currentFocus
+            
             when (keyCode) {
                 android.view.KeyEvent.KEYCODE_DPAD_UP -> {
-                    binding.messagesListView.smoothScrollBy(0, -scrollAmount)
-                    return true
+                    // Check if we're in the message input area
+                    if (currentFocus?.parent?.parent?.id == R.id.fragment_container_activity_chat) {
+                        // Move focus to last message
+                        TvNavigationHelper.requestFocusOnLastVisibleItem(binding.messagesListView)
+                        return true
+                    } else if (binding.messagesListView.hasFocus() || 
+                               binding.messagesListView.focusedChild != null) {
+                        // Handle navigation within messages
+                        return TvNavigationHelper.handleRecyclerViewDpadNavigation(
+                            binding.messagesListView,
+                            keyCode
+                        )
+                    } else {
+                        // Fallback to scrolling
+                        binding.messagesListView.smoothScrollBy(0, -scrollAmount)
+                        return true
+                    }
                 }
                 android.view.KeyEvent.KEYCODE_DPAD_DOWN -> {
-                    binding.messagesListView.smoothScrollBy(0, scrollAmount)
-                    return true
+                    if (binding.messagesListView.hasFocus() || 
+                        binding.messagesListView.focusedChild != null) {
+                        // Handle navigation within messages
+                        val handled = TvNavigationHelper.handleRecyclerViewDpadNavigation(
+                            binding.messagesListView,
+                            keyCode
+                        )
+                        if (!handled) {
+                            // At bottom of messages, move to input
+                            messageInputFragment.binding.fragmentMessageInputView.requestFocus()
+                            return true
+                        }
+                        return handled
+                    } else {
+                        // Fallback to scrolling
+                        binding.messagesListView.smoothScrollBy(0, scrollAmount)
+                        return true
+                    }
                 }
                 android.view.KeyEvent.KEYCODE_PAGE_UP,
                 android.view.KeyEvent.KEYCODE_CHANNEL_UP -> {
                     binding.messagesListView.smoothScrollBy(0, -binding.messagesListView.height)
+                    TvNavigationHelper.requestFocusOnFirstVisibleItem(binding.messagesListView)
                     return true
                 }
                 android.view.KeyEvent.KEYCODE_PAGE_DOWN,
                 android.view.KeyEvent.KEYCODE_CHANNEL_DOWN -> {
                     binding.messagesListView.smoothScrollBy(0, binding.messagesListView.height)
+                    TvNavigationHelper.requestFocusOnLastVisibleItem(binding.messagesListView)
                     return true
                 }
                 android.view.KeyEvent.KEYCODE_MENU -> {
                     conversationVideoMenuItem?.let {
                         onOptionsItemSelected(it)
+                        return true
+                    }
+                }
+                android.view.KeyEvent.KEYCODE_MEDIA_FAST_FORWARD,
+                android.view.KeyEvent.KEYCODE_BUTTON_R1 -> {
+                    // Scroll to bottom (latest messages)
+                    TvNavigationHelper.scrollToBottomAndFocus(binding.messagesListView)
+                    return true
+                }
+                android.view.KeyEvent.KEYCODE_MEDIA_REWIND,
+                android.view.KeyEvent.KEYCODE_BUTTON_L1 -> {
+                    // Scroll to top (oldest messages)
+                    TvNavigationHelper.scrollToTopAndFocus(binding.messagesListView)
+                    return true
+                }
+                android.view.KeyEvent.KEYCODE_BUTTON_Y -> {
+                    // Quick access to message input
+                    messageInputFragment.binding.fragmentMessageInputView.requestFocus()
+                    return true
+                }
+                android.view.KeyEvent.KEYCODE_BACK -> {
+                    // Handle back navigation properly
+                    if (TvNavigationHelper.handleDpadBack(this, currentFocus)) {
                         return true
                     }
                 }

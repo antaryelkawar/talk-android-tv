@@ -1231,13 +1231,35 @@ class ConversationsListActivity :
             binding.floatingActionButton.visibility = View.GONE
             binding.conversationListAppbar.isFocusable = false
             binding.conversationListAppbar.descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
+            
+            // Setup toolbar for TV
+            TvNavigationHelper.setupToolbarForTv(binding.conversationListAppbar, binding.recyclerView)
+            
+            // Setup RecyclerView for TV
             TvUtils.setupRecyclerViewForTv(
                 binding.recyclerView,
                 resources.getColor(R.color.colorPrimary, null)
             )
+            
+            // Request focus on first item after layout
             binding.recyclerView.post {
-                binding.recyclerView.getChildAt(0)?.requestFocus()
+                TvNavigationHelper.requestFocusOnFirstVisibleItem(binding.recyclerView)
             }
+            
+            // Setup bottom buttons for TV navigation
+            val tvButtons = listOfNotNull(
+                binding.switchAccountButton,
+                binding.filterConversationsButton,
+                binding.threadsButton
+            )
+            TvNavigationHelper.setupButtonGroupForTv(
+                tvButtons,
+                TvUtils.NavigationOrientation.HORIZONTAL,
+                circular = false
+            )
+            
+            // Ensure RecyclerView gets focus priority
+            binding.recyclerView.requestFocus()
         } else {
             binding.swipeRefreshLayoutView.setOnRefreshListener {
                 showMaintenanceModeWarning(false)
@@ -1380,10 +1402,42 @@ class ConversationsListActivity :
                     showNewConversationsScreen()
                     return true
                 }
-                android.view.KeyEvent.KEYCODE_MEDIA_PLAY, android.view.KeyEvent.KEYCODE_BUTTON_R1 -> {
+                android.view.KeyEvent.KEYCODE_MEDIA_PLAY, 
+                android.view.KeyEvent.KEYCODE_BUTTON_R1,
+                android.view.KeyEvent.KEYCODE_BUTTON_Y -> {
                     fetchRooms()
                     fetchPendingInvitations()
                     return true
+                }
+                android.view.KeyEvent.KEYCODE_BUTTON_X -> {
+                    // Quick access to new conversation
+                    showNewConversationsScreen()
+                    return true
+                }
+                android.view.KeyEvent.KEYCODE_SEARCH -> {
+                    // Activate search
+                    searchItem?.let { showSearchView(searchView, it) }
+                    return true
+                }
+                android.view.KeyEvent.KEYCODE_DPAD_UP -> {
+                    // Handle D-pad up in RecyclerView
+                    if (binding.recyclerView.hasFocus() || 
+                        binding.recyclerView.focusedChild != null) {
+                        return TvNavigationHelper.handleRecyclerViewDpadNavigation(
+                            binding.recyclerView,
+                            keyCode
+                        )
+                    }
+                }
+                android.view.KeyEvent.KEYCODE_DPAD_DOWN -> {
+                    // Handle D-pad down in RecyclerView
+                    if (binding.recyclerView.hasFocus() || 
+                        binding.recyclerView.focusedChild != null) {
+                        return TvNavigationHelper.handleRecyclerViewDpadNavigation(
+                            binding.recyclerView,
+                            keyCode
+                        )
+                    }
                 }
             }
         }

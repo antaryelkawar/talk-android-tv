@@ -38,6 +38,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.RecyclerView
+import androidx.tv.material3.ExperimentalTvMaterial3Api
 
 object TvUtils {
 
@@ -273,4 +274,41 @@ fun Modifier.tvDpadHandler(
         }
         else -> false
     }
+}
+
+/**
+ * Enhanced TV focus modifier using androidx.tv library for better TV-optimized focus handling
+ * This provides smoother animations and better focus indication than tvFocusHighlight
+ */
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Suppress("MagicNumber")
+fun Modifier.tvFocusEnhanced(
+    onFocusChanged: ((Boolean) -> Unit)? = null
+): Modifier = composed {
+    val isTv = isTvMode()
+    if (!isTv) {
+        return@composed this
+    }
+    
+    var isFocused by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isFocused) 1.05f else 1.0f,
+        label = "tvFocusEnhancedScale"
+    )
+    val borderColor = MaterialTheme.colorScheme.primary
+    
+    this
+        .onFocusChanged { focusState ->
+            isFocused = focusState.isFocused
+            onFocusChanged?.invoke(focusState.isFocused)
+        }
+        .scale(scale)
+        .then(
+            if (isFocused) {
+                Modifier.border(3.dp, borderColor, RoundedCornerShape(12.dp))
+            } else {
+                Modifier
+            }
+        )
+        .focusable()
 }
