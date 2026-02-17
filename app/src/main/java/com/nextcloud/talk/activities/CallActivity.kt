@@ -52,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.net.toUri
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.ViewModelProvider
 import autodagger.AutoInjector
 import com.bluelinelabs.logansquare.LoganSquare
@@ -373,6 +374,19 @@ class CallActivity : CallBaseActivity() {
         isTvMode = TvUtils.isTvMode(this)
         Log.d(TAG, "TV mode: $isTvMode")
 
+        if (isTvMode) {
+            onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (isConnectionEstablished) {
+                        showLeaveCallConfirmation()
+                    } else {
+                        isEnabled = false
+                        onBackPressedDispatcher.onBackPressed()
+                    }
+                }
+            })
+        }
+
         binding!!.screenShareFullscreenView.setContent {
             MaterialTheme {
                 val screenShareParticipantUiState by callViewModel.activeScreenShareSession.collectAsState()
@@ -618,15 +632,7 @@ class CallActivity : CallBaseActivity() {
             when (keyCode) {
                 android.view.KeyEvent.KEYCODE_DPAD_CENTER,
                 android.view.KeyEvent.KEYCODE_ENTER -> {
-                    // D-pad center is already handled by the focused view's click listener
                     return super.onKeyDown(keyCode, event)
-                }
-                android.view.KeyEvent.KEYCODE_BACK -> {
-                    // Show confirmation dialog before leaving call on TV
-                    if (isConnectionEstablished) {
-                        showLeaveCallConfirmation()
-                        return true
-                    }
                 }
                 android.view.KeyEvent.KEYCODE_MENU -> {
                     // Show more call actions on menu button press
