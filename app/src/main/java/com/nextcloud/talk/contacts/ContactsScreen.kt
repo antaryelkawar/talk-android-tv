@@ -31,6 +31,7 @@ import com.nextcloud.talk.contacts.components.ContactsAppBar
 import com.nextcloud.talk.contacts.components.ContactsList
 import com.nextcloud.talk.contacts.components.ContactsSearchAppBar
 import com.nextcloud.talk.contacts.components.ConversationCreationOptions
+import androidx.activity.compose.BackHandler
 import com.nextcloud.talk.utils.isTvMode
 import com.nextcloud.talk.utils.tvDpadHandler
 
@@ -45,10 +46,12 @@ fun ContactsScreen(contactsViewModel: ContactsViewModel, uiState: ContactsViewMo
     val context = LocalContext.current
     val focusRequester = remember { FocusRequester() }
 
+    if (isTv) {
+        BackHandler { (context as? Activity)?.finish() }
+    }
+
     val tvModifier = if (isTv) {
-        Modifier.tvDpadHandler(
-            onBack = { (context as? Activity)?.finish() }
-        )
+        Modifier.tvDpadHandler()
     } else {
         Modifier
     }

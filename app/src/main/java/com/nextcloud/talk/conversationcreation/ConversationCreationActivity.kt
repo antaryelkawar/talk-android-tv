@@ -95,6 +95,7 @@ import com.nextcloud.talk.models.json.autocomplete.AutocompleteUser
 import com.nextcloud.talk.utils.CapabilitiesUtil
 import com.nextcloud.talk.utils.PickImage
 import com.nextcloud.talk.utils.bundle.BundleKeys
+import androidx.activity.compose.BackHandler
 import com.nextcloud.talk.utils.isTvMode
 import com.nextcloud.talk.utils.tvDpadHandler
 import com.nextcloud.talk.utils.tvFocusHighlight
@@ -178,10 +179,13 @@ fun ConversationCreationScreen(
     )
 
     val isTv = isTvMode()
+
+    if (isTv) {
+        BackHandler { (context as? Activity)?.finish() }
+    }
+
     val tvModifier = if (isTv) {
-        Modifier.tvDpadHandler(
-            onBack = { (context as? Activity)?.finish() }
-        )
+        Modifier.tvDpadHandler()
     } else {
         Modifier
     }

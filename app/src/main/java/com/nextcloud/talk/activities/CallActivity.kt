@@ -131,7 +131,6 @@ import com.nextcloud.talk.webrtc.PeerConnectionWrapper.PeerConnectionObserver
 import com.nextcloud.talk.webrtc.WebRtcAudioManager.AudioDevice
 import com.nextcloud.talk.webrtc.WebSocketConnectionHelper
 import com.nextcloud.talk.webrtc.WebSocketInstance
-import com.wooplr.spotlight.SpotlightView
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers

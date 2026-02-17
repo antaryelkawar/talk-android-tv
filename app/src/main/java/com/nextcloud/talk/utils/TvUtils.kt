@@ -238,15 +238,10 @@ fun Modifier.tvFocusHighlight(): Modifier = composed {
 }
 
 fun Modifier.tvDpadHandler(
-    onBack: (() -> Unit)? = null,
     onSelect: (() -> Unit)? = null
 ): Modifier = this.onPreviewKeyEvent { event ->
     if (event.type != androidx.compose.ui.input.key.KeyEventType.KeyDown) return@onPreviewKeyEvent false
     when (event.key.nativeKeyCode) {
-        KeyEvent.KEYCODE_BACK -> {
-            onBack?.invoke()
-            onBack != null
-        }
         KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
             onSelect?.invoke()
             onSelect != null
