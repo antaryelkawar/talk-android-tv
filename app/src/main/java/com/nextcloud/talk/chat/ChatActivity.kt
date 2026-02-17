@@ -1910,50 +1910,65 @@ class ChatActivity :
         }
     }
 
+    private fun isMessageInputFocused(): Boolean {
+        val focus = currentFocus ?: return false
+        // Check if focus is within the message input fragment container
+        var parent = focus.parent
+        while (parent != null) {
+            if ((parent as? View)?.id == R.id.fragment_container_activity_chat) {
+                return true
+            }
+            parent = parent.parent
+        }
+        return false
+    }
+
+    private fun isMessagesListFocused(): Boolean {
+        return binding.messagesListView.hasFocus() || binding.messagesListView.focusedChild != null
+    }
+
     @Suppress("MagicNumber")
     override fun onKeyDown(keyCode: Int, event: android.view.KeyEvent?): Boolean {
         if (isTvMode) {
             val scrollAmount = binding.messagesListView.height / 3
-            val currentFocus = currentFocus
             
             when (keyCode) {
                 android.view.KeyEvent.KEYCODE_DPAD_UP -> {
-                    // Check if we're in the message input area
-                    if (currentFocus?.parent?.parent?.id == R.id.fragment_container_activity_chat) {
-                        // Move focus to last message
-                        TvNavigationHelper.requestFocusOnLastVisibleItem(binding.messagesListView)
-                        return true
-                    } else if (binding.messagesListView.hasFocus() || 
-                               binding.messagesListView.focusedChild != null) {
-                        // Handle navigation within messages
-                        return TvNavigationHelper.handleRecyclerViewDpadNavigation(
-                            binding.messagesListView,
-                            keyCode
-                        )
-                    } else {
-                        // Fallback to scrolling
-                        binding.messagesListView.smoothScrollBy(0, -scrollAmount)
-                        return true
+                    return when {
+                        isMessageInputFocused() -> {
+                            TvNavigationHelper.requestFocusOnLastVisibleItem(binding.messagesListView)
+                            true
+                        }
+                        isMessagesListFocused() -> {
+                            TvNavigationHelper.handleRecyclerViewDpadNavigation(
+                                binding.messagesListView,
+                                keyCode
+                            )
+                        }
+                        else -> {
+                            binding.messagesListView.smoothScrollBy(0, -scrollAmount)
+                            true
+                        }
                     }
                 }
                 android.view.KeyEvent.KEYCODE_DPAD_DOWN -> {
-                    if (binding.messagesListView.hasFocus() || 
-                        binding.messagesListView.focusedChild != null) {
-                        // Handle navigation within messages
-                        val handled = TvNavigationHelper.handleRecyclerViewDpadNavigation(
-                            binding.messagesListView,
-                            keyCode
-                        )
-                        if (!handled) {
-                            // At bottom of messages, move to input
-                            messageInputFragment.binding.fragmentMessageInputView.requestFocus()
-                            return true
+                    return when {
+                        isMessagesListFocused() -> {
+                            val handled = TvNavigationHelper.handleRecyclerViewDpadNavigation(
+                                binding.messagesListView,
+                                keyCode
+                            )
+                            if (!handled) {
+                                messageInputFragment.binding.fragmentMessageInputView.requestFocus()
+                                true
+                            } else {
+                                handled
+                            }
                         }
-                        return handled
-                    } else {
-                        // Fallback to scrolling
-                        binding.messagesListView.smoothScrollBy(0, scrollAmount)
-                        return true
+                        else -> {
+                            binding.messagesListView.smoothScrollBy(0, scrollAmount)
+                            true
+                        }
                     }
                 }
                 android.view.KeyEvent.KEYCODE_PAGE_UP,
