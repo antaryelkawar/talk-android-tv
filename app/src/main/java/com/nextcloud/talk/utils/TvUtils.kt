@@ -10,8 +10,7 @@ package com.nextcloud.talk.utils
 import android.app.UiModeManager
 import android.content.Context
 import android.content.res.Configuration
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
@@ -39,7 +38,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.RecyclerView
 
+@Suppress("MagicNumber")
 object TvUtils {
+
+    private const val FOCUS_BORDER_WIDTH_PX = 6
+    private const val FOCUS_CORNER_RADIUS_PX = 16f
+    private const val FOCUS_SCALE_ITEM = 1.05f
+    private const val FOCUS_SCALE_BUTTON = 1.08f
+    private const val FOCUS_ELEVATION = 8f
+    private const val RECYCLER_VIEW_CACHE_SIZE = 20
+    private const val INITIAL_FOCUS_DELAY_MS = 500L
 
     fun isTvMode(context: Context): Boolean {
         val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
@@ -56,28 +64,27 @@ object TvUtils {
         return 16f / 9f
     }
 
+    private fun createFocusBorderDrawable(@ColorInt color: Int, cornerRadius: Float = FOCUS_CORNER_RADIUS_PX): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            setStroke(FOCUS_BORDER_WIDTH_PX, color)
+            setCornerRadius(cornerRadius)
+            setColor(android.graphics.Color.TRANSPARENT)
+        }
+    }
+
     fun applyTvFocusHighlight(view: View, @ColorInt focusColor: Int) {
         view.isFocusable = true
         view.isFocusableInTouchMode = false
 
-        val originalBackground = view.background
-
         view.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                val focusDrawable = ColorDrawable(
-                    Color.argb(
-                        60,
-                        Color.red(focusColor),
-                        Color.green(focusColor),
-                        Color.blue(focusColor)
-                    )
-                )
-                v.background = focusDrawable
-                v.scaleX = 1.1f
-                v.scaleY = 1.1f
-                v.elevation = 8f
+                v.foreground = createFocusBorderDrawable(focusColor)
+                v.scaleX = FOCUS_SCALE_BUTTON
+                v.scaleY = FOCUS_SCALE_BUTTON
+                v.elevation = FOCUS_ELEVATION
             } else {
-                v.background = originalBackground
+                v.foreground = null
                 v.scaleX = 1.0f
                 v.scaleY = 1.0f
                 v.elevation = 0f
@@ -150,12 +157,11 @@ object TvUtils {
         return Pair(1920, 1080)
     }
 
-    @Suppress("MagicNumber")
     fun setupRecyclerViewForTv(recyclerView: RecyclerView, @ColorInt focusColor: Int) {
         recyclerView.descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
-        recyclerView.isFocusable = true
+        recyclerView.isFocusable = false
         recyclerView.isFocusableInTouchMode = false
-        recyclerView.setItemViewCacheSize(20)
+        recyclerView.setItemViewCacheSize(RECYCLER_VIEW_CACHE_SIZE)
         recyclerView.clipToPadding = false
         recyclerView.clipChildren = false
 
@@ -171,29 +177,20 @@ object TvUtils {
                 override fun onChildViewAttachedToWindow(view: View) {
                     view.isFocusable = true
                     view.isFocusableInTouchMode = false
-                    view.isClickable = true  // Required for TV focus
-                    val originalBackground = view.background
+                    view.isClickable = true
                     view.setOnFocusChangeListener { v, hasFocus ->
                         if (hasFocus) {
-                            val focusDrawable = ColorDrawable(
-                                Color.argb(
-                                    40,
-                                    Color.red(focusColor),
-                                    Color.green(focusColor),
-                                    Color.blue(focusColor)
-                                )
-                            )
-                            v.background = focusDrawable
-                            v.scaleX = 1.02f
-                            v.scaleY = 1.02f
-                            v.elevation = 4f
+                            v.foreground = createFocusBorderDrawable(focusColor)
+                            v.scaleX = FOCUS_SCALE_ITEM
+                            v.scaleY = FOCUS_SCALE_ITEM
+                            v.elevation = FOCUS_ELEVATION
 
                             val parent = v.parent
                             if (parent is RecyclerView) {
                                 parent.smoothScrollToPosition(parent.getChildAdapterPosition(v))
                             }
                         } else {
-                            v.background = originalBackground
+                            v.foreground = null
                             v.scaleX = 1.0f
                             v.scaleY = 1.0f
                             v.elevation = 0f
@@ -202,13 +199,23 @@ object TvUtils {
                 }
 
                 override fun onChildViewDetachedFromWindow(view: View) {
-                    // no-op
+                    view.setOnFocusChangeListener(null)
                 }
             }
         )
     }
 
-    @Deprecated("Use setupRecyclerViewForTv instead", ReplaceWith("setupRecyclerViewForTv(recyclerView, focusColor)"))
+    fun requestInitialFocus(recyclerView: RecyclerView) {
+        recyclerView.postDelayed({
+            val firstChild = recyclerView.getChildAt(0)
+            firstChild?.requestFocus() ?: recyclerView.requestFocus()
+        }, INITIAL_FOCUS_DELAY_MS)
+    }
+
+    @Deprecated(
+        "Use setupRecyclerViewForTv instead",
+        ReplaceWith("setupRecyclerViewForTv(recyclerView, focusColor)")
+    )
     fun makeRecyclerViewItemsFocusable(recyclerView: RecyclerView, @ColorInt focusColor: Int) {
         setupRecyclerViewForTv(recyclerView, focusColor)
     }
@@ -222,10 +229,11 @@ object TvUtils {
     fun makeViewGroupChildrenFocusable(viewGroup: ViewGroup, @ColorInt focusColor: Int) {
         for (i in 0 until viewGroup.childCount) {
             val child = viewGroup.getChildAt(i)
-            if (child.isClickable) {
+            val isInteractive = child.isClickable || child.hasOnClickListeners()
+            if (isInteractive) {
                 applyTvFocusHighlight(child, focusColor)
             } else if (child is ViewGroup) {
-                if (child.isClickable) {
+                if (child.isClickable || child.hasOnClickListeners()) {
                     applyTvFocusHighlight(child, focusColor)
                 } else {
                     makeViewGroupChildrenFocusable(child, focusColor)
@@ -245,7 +253,7 @@ fun isTvMode(): Boolean {
 fun Modifier.tvFocusHighlight(): Modifier = composed {
     var isFocused by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(
-        targetValue = if (isFocused) 1.03f else 1.0f,
+        targetValue = if (isFocused) 1.05f else 1.0f,
         label = "tvFocusScale"
     )
     val borderColor = MaterialTheme.colorScheme.primary
@@ -255,7 +263,7 @@ fun Modifier.tvFocusHighlight(): Modifier = composed {
         .scale(scale)
         .then(
             if (isFocused) {
-                Modifier.border(2.dp, borderColor, RoundedCornerShape(8.dp))
+                Modifier.border(3.dp, borderColor, RoundedCornerShape(8.dp))
             } else {
                 Modifier
             }
@@ -276,11 +284,6 @@ fun Modifier.tvDpadHandler(
     }
 }
 
-/**
- * Enhanced TV focus modifier for better TV-optimized focus handling
- * This provides smoother animations and better focus indication than tvFocusHighlight
- * Uses standard Compose APIs without requiring androidx.tv libraries
- */
 @Suppress("MagicNumber")
 fun Modifier.tvFocusEnhanced(
     onFocusChanged: ((Boolean) -> Unit)? = null
@@ -289,14 +292,14 @@ fun Modifier.tvFocusEnhanced(
     if (!isTv) {
         return@composed this
     }
-    
+
     var isFocused by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(
         targetValue = if (isFocused) 1.05f else 1.0f,
         label = "tvFocusEnhancedScale"
     )
     val borderColor = MaterialTheme.colorScheme.primary
-    
+
     this
         .onFocusChanged { focusState ->
             isFocused = focusState.isFocused

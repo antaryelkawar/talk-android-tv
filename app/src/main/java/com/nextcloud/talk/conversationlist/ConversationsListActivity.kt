@@ -1225,35 +1225,30 @@ class ConversationsListActivity :
             }
             false
         }
-                if (isTvMode) {
-                    // Disable swipe refresh for TV
-                    binding.swipeRefreshLayoutView.isEnabled = false
-                    binding.floatingActionButton.visibility = View.GONE
-        
-                    // Setup toolbar buttons to be focusable
-                    TvNavigationHelper.setupToolbarForTv(binding.conversationListAppbar)
-                    
-                    // Setup RecyclerView for TV - makes items focusable with focus highlights
-                    TvUtils.setupRecyclerViewForTv(
-                        binding.recyclerView,
-                        resources.getColor(R.color.colorPrimary, null)
-                    )
-        
-                    // Make bottom buttons focusable
-                    listOf(
-                        binding.switchAccountButton,
-                        binding.filterConversationsButton,
-                        binding.threadsButton
-                    ).forEach { button ->
-                        button.isFocusable = true
-                        button.isFocusableInTouchMode = false
-                    }
-        
-                    // Request focus after adapter is set and items are loaded
-                    binding.recyclerView.postDelayed({
-                        val firstChild = binding.recyclerView.getChildAt(0)
-                        firstChild?.requestFocus() ?: binding.recyclerView.requestFocus()
-                    }, 100)        } else {
+        if (isTvMode) {
+            binding.swipeRefreshLayoutView.isEnabled = false
+            binding.swipeRefreshLayoutView.isFocusable = false
+            binding.swipeRefreshLayoutView.descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
+            binding.floatingActionButton.visibility = View.GONE
+
+            TvNavigationHelper.setupToolbarForTv(binding.conversationListAppbar)
+
+            TvUtils.setupRecyclerViewForTv(
+                binding.recyclerView,
+                resources.getColor(R.color.colorPrimary, null)
+            )
+
+            listOf(
+                binding.switchAccountButton,
+                binding.filterConversationsButton,
+                binding.threadsButton
+            ).forEach { button ->
+                button.isFocusable = true
+                button.isFocusableInTouchMode = false
+            }
+
+            TvUtils.requestInitialFocus(binding.recyclerView)
+        } else {
             binding.swipeRefreshLayoutView.setOnRefreshListener {
                 showMaintenanceModeWarning(false)
                 fetchRooms()
@@ -1395,7 +1390,7 @@ class ConversationsListActivity :
                     showNewConversationsScreen()
                     return true
                 }
-                android.view.KeyEvent.KEYCODE_MEDIA_PLAY, 
+                android.view.KeyEvent.KEYCODE_MEDIA_PLAY,
                 android.view.KeyEvent.KEYCODE_BUTTON_R1,
                 android.view.KeyEvent.KEYCODE_BUTTON_Y -> {
                     fetchRooms()
@@ -1403,18 +1398,17 @@ class ConversationsListActivity :
                     return true
                 }
                 android.view.KeyEvent.KEYCODE_BUTTON_X -> {
-                    // Quick access to new conversation
                     showNewConversationsScreen()
                     return true
                 }
-                                android.view.KeyEvent.KEYCODE_SEARCH -> {
-                                    // Activate search
-                                    searchItem?.let { showSearchView(searchView, it) }
-                                    return true
-                                }
-                            }
-                        }
-                        return super.onKeyDown(keyCode, event)    }
+                android.view.KeyEvent.KEYCODE_SEARCH -> {
+                    searchItem?.let { showSearchView(searchView, it) }
+                    return true
+                }
+            }
+        }
+        return super.onKeyDown(keyCode, event)
+    }
 
     public override fun onDestroy() {
         super.onDestroy()

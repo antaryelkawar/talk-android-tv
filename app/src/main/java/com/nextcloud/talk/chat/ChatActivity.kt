@@ -1931,21 +1931,22 @@ class ChatActivity :
     override fun onKeyDown(keyCode: Int, event: android.view.KeyEvent?): Boolean {
         if (isTvMode) {
             val scrollAmount = binding.messagesListView.height / 3
-            
+
             when (keyCode) {
                 android.view.KeyEvent.KEYCODE_DPAD_UP -> {
-                                    return when {
-                                        isMessageInputFocused() -> {
-                                            TvNavigationHelper.requestFocusOnLastVisibleItem(binding.messagesListView)
-                                            true
-                                        }
-                                        isMessagesListFocused() -> {
-                                            TvNavigationHelper.handleRecyclerViewDpadNavigation(
-                                                binding.messagesListView,
-                                                keyCode,
-                                                isReverseLayout = true
-                                            )
-                                        }                        else -> {
+                    return when {
+                        isMessageInputFocused() -> {
+                            TvNavigationHelper.requestFocusOnLastVisibleItem(binding.messagesListView)
+                            true
+                        }
+                        isMessagesListFocused() -> {
+                            TvNavigationHelper.handleRecyclerViewDpadNavigation(
+                                binding.messagesListView,
+                                keyCode,
+                                isReverseLayout = true
+                            )
+                        }
+                        else -> {
                             binding.messagesListView.smoothScrollBy(0, -scrollAmount)
                             true
                         }
@@ -1992,18 +1993,15 @@ class ChatActivity :
                 }
                 android.view.KeyEvent.KEYCODE_MEDIA_FAST_FORWARD,
                 android.view.KeyEvent.KEYCODE_BUTTON_R1 -> {
-                    // Scroll to bottom (latest messages)
                     TvNavigationHelper.scrollToBottomAndFocus(binding.messagesListView)
                     return true
                 }
                 android.view.KeyEvent.KEYCODE_MEDIA_REWIND,
                 android.view.KeyEvent.KEYCODE_BUTTON_L1 -> {
-                    // Scroll to top (oldest messages)
                     TvNavigationHelper.scrollToTopAndFocus(binding.messagesListView)
                     return true
                 }
                 android.view.KeyEvent.KEYCODE_BUTTON_Y -> {
-                    // Quick access to message input
                     messageInputFragment.binding.fragmentMessageInputView.requestFocus()
                     return true
                 }

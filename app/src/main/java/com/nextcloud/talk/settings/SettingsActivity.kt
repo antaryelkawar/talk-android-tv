@@ -304,8 +304,29 @@ class SettingsActivity :
         binding.settingsScreenLock.visibility = View.GONE
         binding.settingsPhoneBookIntegration.visibility = View.GONE
 
+        val focusColor = resources.getColor(R.color.colorPrimary, null)
+        val settingsRows = listOf(
+            binding.settingsRemoveAccount,
+            binding.settingsScreenSecurity,
+            binding.settingsIncognitoKeyboard,
+            binding.settingsReadPrivacy,
+            binding.settingsTypingStatus,
+            binding.diagnoseWrapper,
+            binding.settingsClientCert,
+            binding.settingsProxyUseCredentials,
+            binding.settingsPrivacy,
+            binding.settingsSourceCode,
+            binding.settingsLicence,
+            binding.settingsShowNotificationWarning
+        )
+        for (row in settingsRows) {
+            TvUtils.applyTvFocusHighlight(row, focusColor)
+        }
+
+        binding.settingsTheme.isFocusable = true
+        binding.settingsTheme.isFocusableInTouchMode = false
+
         binding.scrollView.post {
-            val focusColor = resources.getColor(R.color.colorPrimary, null)
             TvUtils.makeViewGroupChildrenFocusable(
                 binding.scrollView.getChildAt(0) as android.view.ViewGroup,
                 focusColor
