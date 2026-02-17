@@ -1233,29 +1233,49 @@ class ConversationsListActivity :
             
                         // Setup toolbar for TV - makes toolbar buttons focusable
                         TvNavigationHelper.setupToolbarForTv(binding.conversationListAppbar)            
-            // Setup RecyclerView for TV
-            TvUtils.setupRecyclerViewForTv(
-                binding.recyclerView,
-                resources.getColor(R.color.colorPrimary, null)
-            )
+                        // Setup RecyclerView for TV
+                        TvUtils.setupRecyclerViewForTv(
+                            binding.recyclerView,
+                            resources.getColor(R.color.colorPrimary, null)
+                        )
+                        
+                        // Allow focus to escape RecyclerView
+                        binding.recyclerView.descendantFocusability = ViewGroup.FOCUS_BEFORE_DESCENDANTS
             
-            // Request focus on first item after layout
-            binding.recyclerView.post {
-                TvNavigationHelper.requestFocusOnFirstVisibleItem(binding.recyclerView)
-            }
+                        // Setup bottom buttons for TV navigation
+                        val tvButtons = listOfNotNull(
+                            binding.switchAccountButton,
+                            binding.filterConversationsButton,
+                            binding.threadsButton
+                        )
+                        TvNavigationHelper.setupButtonGroupForTv(
+                            tvButtons,
+                            TvUtils.NavigationOrientation.HORIZONTAL,
+                            circular = false
+                        )
+                        
+                        // Link RecyclerView with toolbar and bottom buttons using standard Android focus navigation
+                        if (tvButtons.isNotEmpty()) {
+                            binding.recyclerView.nextFocusDownId = tvButtons[0].id
+                            tvButtons.forEach { button ->
+                                button.nextFocusUpId = binding.recyclerView.id
+                            }
+                        }
+                        
+                        // Find first focusable toolbar item and link it
+                        for (i in 0 until binding.conversationListAppbar.childCount) {
+                            val child = binding.conversationListAppbar.getChildAt(i)
+                            if (child.isFocusable) {
+                                child.nextFocusDownId = binding.recyclerView.id
+                                binding.recyclerView.nextFocusUpId = child.id
+                                break
+                            }
+                        }
             
-            // Setup bottom buttons for TV navigation
-            val tvButtons = listOfNotNull(
-                binding.switchAccountButton,
-                binding.filterConversationsButton,
-                binding.threadsButton
-            )
-            TvNavigationHelper.setupButtonGroupForTv(
-                tvButtons,
-                TvUtils.NavigationOrientation.HORIZONTAL,
-                circular = false
-            )
-            
+                        // Request focus on first item after layout
+                        binding.recyclerView.post {
+                            TvNavigationHelper.requestFocusOnFirstVisibleItem(binding.recyclerView)
+                        }            
             // Ensure RecyclerView gets focus priority
             binding.recyclerView.requestFocus()
         } else {
