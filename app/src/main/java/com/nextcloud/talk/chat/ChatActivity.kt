@@ -1537,15 +1537,16 @@ class ChatActivity :
                 binding.messagesListView,
                 resources.getColor(R.color.colorPrimary, null)
             )
-            
-            // Hide floating action buttons for TV
+
             binding.scrollDownButton.visibility = View.GONE
             binding.voiceRecordingLock.visibility = View.GONE
-            
-            // Setup toolbar for TV - makes toolbar buttons focusable
+
             TvNavigationHelper.setupToolbarForTv(binding.chatToolbar)
-            
-            // Request focus on messages list after layout
+            binding.chatToolbar.isFocusable = true
+            binding.chatToolbar.isFocusableInTouchMode = false
+            binding.chatToolbar.nextFocusDownId = binding.messagesListView.id
+            binding.messagesListView.nextFocusUpId = binding.chatToolbar.id
+
             binding.messagesListView.post {
                 TvNavigationHelper.requestFocusOnFirstVisibleItem(binding.messagesListView)
             }
@@ -1940,11 +1941,15 @@ class ChatActivity :
                             true
                         }
                         isMessagesListFocused() -> {
-                            TvNavigationHelper.handleRecyclerViewDpadNavigation(
+                            val handled = TvNavigationHelper.handleRecyclerViewDpadNavigation(
                                 binding.messagesListView,
                                 keyCode,
                                 isReverseLayout = true
                             )
+                            if (!handled) {
+                                binding.chatToolbar.requestFocus()
+                            }
+                            true
                         }
                         else -> {
                             binding.messagesListView.smoothScrollBy(0, -scrollAmount)
@@ -3501,6 +3506,11 @@ class ChatActivity :
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
         super.onPrepareOptionsMenu(menu)
+        if (isTvMode) {
+            binding.chatToolbar.post {
+                TvNavigationHelper.setupToolbarForTv(binding.chatToolbar)
+            }
+        }
 
         if (this::spreedCapabilities.isInitialized) {
             if (hasSpreedFeatureCapability(spreedCapabilities, SpreedFeatures.READ_ONLY_ROOMS)) {

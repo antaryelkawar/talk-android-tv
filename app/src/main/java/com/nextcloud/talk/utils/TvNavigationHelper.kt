@@ -39,10 +39,10 @@ object TvNavigationHelper {
         val currentPosition = if (currentFocus != null) {
             recyclerView.getChildAdapterPosition(currentFocus)
         } else {
-            0
+            -1
         }
+        val itemCount = recyclerView.adapter?.itemCount ?: 0
 
-        // Invert navigation for reverse layout lists (newest items at top)
         val upKey = if (isReverseLayout) KeyEvent.KEYCODE_DPAD_DOWN else KeyEvent.KEYCODE_DPAD_UP
         val downKey = if (isReverseLayout) KeyEvent.KEYCODE_DPAD_UP else KeyEvent.KEYCODE_DPAD_DOWN
 
@@ -53,18 +53,21 @@ object TvNavigationHelper {
                     recyclerView.post {
                         layoutManager.findViewByPosition(currentPosition - 1)?.requestFocus()
                     }
+                    true
+                } else {
+                    false
                 }
-                true
             }
             downKey -> {
-                val itemCount = recyclerView.adapter?.itemCount ?: 0
-                if (currentPosition < itemCount - 1) {
+                if (currentPosition in 0 until itemCount - 1) {
                     recyclerView.smoothScrollToPosition(currentPosition + 1)
                     recyclerView.post {
                         layoutManager.findViewByPosition(currentPosition + 1)?.requestFocus()
                     }
+                    true
+                } else {
+                    false
                 }
-                true
             }
             KeyEvent.KEYCODE_DPAD_LEFT -> {
                 if (enableHorizontalScroll && currentPosition > 0) {
@@ -78,13 +81,10 @@ object TvNavigationHelper {
                 }
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                if (enableHorizontalScroll) {
-                    val itemCount = recyclerView.adapter?.itemCount ?: 0
-                    if (currentPosition < itemCount - 1) {
-                        recyclerView.smoothScrollToPosition(currentPosition + 1)
-                        recyclerView.post {
-                            layoutManager.findViewByPosition(currentPosition + 1)?.requestFocus()
-                        }
+                if (enableHorizontalScroll && currentPosition in 0 until itemCount - 1) {
+                    recyclerView.smoothScrollToPosition(currentPosition + 1)
+                    recyclerView.post {
+                        layoutManager.findViewByPosition(currentPosition + 1)?.requestFocus()
                     }
                     true
                 } else {

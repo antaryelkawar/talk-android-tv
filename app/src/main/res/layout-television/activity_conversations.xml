@@ -21,7 +21,7 @@
         android:clipChildren="true"
         android:clipToPadding="false"
         android:focusable="false"
-        android:descendantFocusability="blocksDescendants"
+        android:descendantFocusability="afterDescendants"
         android:windowContentOverlay="@null"
         app:elevation="0dp"
         app:liftOnScrollTargetViewId="@id/recycler_view"
