@@ -38,7 +38,6 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.RecyclerView
-import androidx.tv.material3.ExperimentalTvMaterial3Api
 
 object TvUtils {
 
@@ -277,10 +276,10 @@ fun Modifier.tvDpadHandler(
 }
 
 /**
- * Enhanced TV focus modifier using androidx.tv library for better TV-optimized focus handling
+ * Enhanced TV focus modifier for better TV-optimized focus handling
  * This provides smoother animations and better focus indication than tvFocusHighlight
+ * Uses standard Compose APIs without requiring androidx.tv libraries
  */
-@OptIn(ExperimentalTvMaterial3Api::class)
 @Suppress("MagicNumber")
 fun Modifier.tvFocusEnhanced(
     onFocusChanged: ((Boolean) -> Unit)? = null
