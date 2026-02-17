@@ -11,8 +11,6 @@ package com.nextcloud.talk.chat
 
 import android.content.Context
 import android.text.format.DateFormat
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -25,6 +23,7 @@ import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -67,6 +66,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAdjusters.nextOrSame
 
 class ScheduleMessageCompose(
@@ -80,7 +80,8 @@ class ScheduleMessageCompose(
     private val timeState = mutableStateOf(initialTime())
 
     private fun initialTime(): LocalDateTime {
-        val scheduled = initialScheduledAt ?: return LocalDateTime.now()
+        val scheduled = initialScheduledAt
+            ?: return LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).plusHours(1)
         return LocalDateTime.ofInstant(Instant.ofEpochSecond(scheduled), ZoneId.systemDefault())
     }
 
@@ -248,19 +249,35 @@ class ScheduleMessageCompose(
         val context = LocalContext.current
         Row(
             modifier = Modifier
-                .padding(INT_8.dp)
+                .padding(start = 8.dp, end = 8.dp, top = 6.dp, bottom = 8.dp)
                 .fillMaxWidth()
         ) {
             Text(stringResource(R.string.nc_schedule_message_title), modifier = Modifier.weight(HALF_WEIGHT))
 
-            val timeText = timeState.value.format(DateTimeFormatter.ofPattern(fullPattern(context)))
-
-            Spacer(modifier = Modifier.width(60.dp))
-
-            Text(
-                timeText,
-                modifier = Modifier.weight(HALF_WEIGHT)
+            val dateText = timeState.value.format(
+                DateTimeFormatter.ofPattern("EEE, dd MMM")
             )
+
+            val timeText = timeState.value.format(
+                DateTimeFormatter.ofPattern(
+                    if (DateFormat.is24HourFormat(context)) {
+                        "HH:mm"
+                    } else {
+                        "hh:mm a"
+                    }
+                )
+            )
+
+            Spacer(modifier = Modifier.width(44.dp))
+
+            Column(modifier = Modifier.weight(HALF_WEIGHT)) {
+                Text(
+                    text = dateText
+                )
+                Text(
+                    text = timeText
+                )
+            }
         }
         HorizontalDivider()
     }
@@ -363,24 +380,28 @@ class ScheduleMessageCompose(
 
     @Composable
     private fun TimeOption(label: String, timeString: String, selected: Boolean, onClick: () -> Unit) {
-        Row(
+        Surface(
+            onClick = onClick,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(INT_8.dp)
-                .background(
-                    if (selected) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        Color
-                            .Transparent
-                    },
-                    RoundedCornerShape(4.dp)
-                )
-                .clickable { onClick() }
+                .wrapContentWidth(),
+            color = if (selected) {
+                MaterialTheme.colorScheme.inversePrimary
+            } else {
+                Color.Transparent
+            },
+            shape = RoundedCornerShape(10.dp)
         ) {
-            Text(label, modifier = Modifier.weight(HALF_WEIGHT))
-            Spacer(modifier = Modifier.width(60.dp))
-            Text(timeString, modifier = Modifier.weight(HALF_WEIGHT))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 6.dp, top = 6.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = label, modifier = Modifier.weight(HALF_WEIGHT))
+                Spacer(modifier = Modifier.width(44.dp))
+                Text(text = timeString, modifier = Modifier.weight(HALF_WEIGHT))
+            }
         }
     }
 

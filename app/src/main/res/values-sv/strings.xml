@@ -170,6 +170,7 @@
     <string name="nc_common_skip">Hoppa över</string>
     <string name="nc_common_unknown">Okänd</string>
     <string name="nc_configure_cert_auth">Välj autentiseringscertifikat</string>
+    <string name="nc_confirm">Bekräfta</string>
     <string name="nc_connecting_call">Ansluter…</string>
     <string name="nc_contacts_done">Färdig</string>
     <string name="nc_conversation_description">Konversationsbeskrivning</string>
@@ -393,8 +394,6 @@
     <string name="nc_push_notification_error"> Tyvärr, något gick fel. Felet är %1$s</string>
     <string name="nc_push_notification_fetch_error">Tyvärr, något gick fel. Kunde inte hämta testmeddelande för push-notis</string>
     <string name="nc_push_notification_message">Push-notis skickades framgångsrikt. Du bör nu få en notis på den här enheten med titeln \'Testar push-notiser\'</string>
-    <string name="nc_push_to_talk">Push-to-talk</string>
-    <string name="nc_push_to_talk_desc">Med mikrofon inaktiverad klickar du på &amp;vänta för att använda Push-to-talk</string>
     <string name="nc_remind">Påminn mig senare</string>
     <string name="nc_remove_from_favorites">Ta bort från favoriter</string>
     <string name="nc_remove_group_and_members">Ta bort grupp och medlemmar</string>
@@ -408,6 +407,7 @@
     <string name="nc_room_retention">Rummet har behållits framgångsrikt</string>
     <string name="nc_save_message">Spara</string>
     <string name="nc_save_success">Sparad</string>
+    <string name="nc_scheduled_time">Schemalagd tid</string>
     <string name="nc_screen_lock_timeout_30">30 sekunder</string>
     <string name="nc_screen_lock_timeout_300">5 minuter</string>
     <string name="nc_screen_lock_timeout_60">1 minut</string>
@@ -421,6 +421,8 @@
     <string name="nc_search_clear">Rensa sökning</string>
     <string name="nc_select_an_account">Välj ett konto</string>
     <string name="nc_send_edit_message">Uppdatera meddelande</string>
+    <string name="nc_send_later">Skicka senare</string>
+    <string name="nc_send_now">Skicka nu</string>
     <string name="nc_send_voice_recording">Skicka röstinspelning</string>
     <string name="nc_sensitive_conversation">Känslig konversation</string>
     <string name="nc_sensitive_conversation_hint">Förhandsvisning av meddelanden kommer att inaktiveras i konversationslistan och i aviseringar</string>
@@ -566,6 +568,8 @@
     <string name="open_in_files_app">Öppna i appen Filer</string>
     <string name="open_notes">Öppna anteckningar</string>
     <string name="open_thread">Gå till tråd</string>
+    <string name="pinned_dismiss">Avfärda</string>
+    <string name="pinned_message_options">Meddelandeinställningar</string>
     <string name="play_pause_voice_message">Spela/pausa röstmeddelande</string>
     <string name="playback_speed_control">Kontroll av uppspelningshastighet</string>
     <string name="please_continue_the_login_process_in_the_browser">Fortsätt inloggningen i webbläsaren</string>

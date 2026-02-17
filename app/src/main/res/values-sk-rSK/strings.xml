@@ -172,6 +172,7 @@
     <string name="nc_common_skip">Preskočiť</string>
     <string name="nc_common_unknown">Neznámy</string>
     <string name="nc_configure_cert_auth">Vybrať autentifikačný certifikát</string>
+    <string name="nc_confirm">Potvrdiť</string>
     <string name="nc_connecting_call">Pripájam sa …</string>
     <string name="nc_contacts_done">Hotovo</string>
     <string name="nc_conversation_description">Popis konverzácie</string>
@@ -301,6 +302,7 @@
     <string name="nc_ignore_battery_optimization_dialog_title">Ignorovať optimalizáciu batérie</string>
     <string name="nc_important_conversation">Dôležitá konverzácia</string>
     <string name="nc_important_conversation_desc">Stav používateľa „Nerušiť“ sa pri dôležitých konverzáciách ignoruje.</string>
+    <string name="nc_in_conversation">o %1$s</string>
     <string name="nc_invalid_time">Neplatný čas</string>
     <string name="nc_invitations">Pozvánky</string>
     <string name="nc_join_open_conversations">Pripojiť sa k prebiehajúcim konverzáciam</string>
@@ -395,8 +397,6 @@
     <string name="nc_push_notification_error">Prepáč, niečo sa pokazilo, chyba je%1$s</string>
     <string name="nc_push_notification_fetch_error">Prepáčte, niečo sa pokazilo, nepodarilo sa načítať testovaciu push správu.</string>
     <string name="nc_push_notification_message">Push notifikácia bola úspešne odoslaná. Teraz by ste mali na tomto zariadení dostať notifikáciu s názvom „Testovanie push notifikácií“.</string>
-    <string name="nc_push_to_talk">Stlač a hovor PTT</string>
-    <string name="nc_push_to_talk_desc">S vypnutým mikrofónom, ťuknite &amp;podržte pre použitie funkcie Stlač a hovor PTT</string>
     <string name="nc_remind">Pripomenúť neskôr</string>
     <string name="nc_remove_from_favorites">Odstrániť z obľúbených</string>
     <string name="nc_remove_group_and_members">Odobrať skupinu a členov</string>
@@ -410,6 +410,10 @@
     <string name="nc_room_retention">Miestnosť bola úspešne uchovaná</string>
     <string name="nc_save_message">Uložiť</string>
     <string name="nc_save_success">Úspešne uložené</string>
+    <string name="nc_schedule_message">Naplánovať správu</string>
+    <string name="nc_schedule_message_title">Naplánovať správu</string>
+    <string name="nc_scheduled_messages">Plánované správy</string>
+    <string name="nc_scheduled_time">Naplánovaný čas</string>
     <string name="nc_screen_lock_timeout_30">30 sekúnd</string>
     <string name="nc_screen_lock_timeout_300">5 minút</string>
     <string name="nc_screen_lock_timeout_60">1 minúta</string>
@@ -423,6 +427,8 @@
     <string name="nc_search_clear">Vymazať hľadanie</string>
     <string name="nc_select_an_account">Zvoľte si účet</string>
     <string name="nc_send_edit_message">Aktualizovať správu</string>
+    <string name="nc_send_later">Odoslať neskôr</string>
+    <string name="nc_send_now">Odoslať teraz</string>
     <string name="nc_send_voice_recording">Odoslať hlasovú nahrávku</string>
     <string name="nc_sensitive_conversation">Citlivá konverzácia</string>
     <string name="nc_sensitive_conversation_hint">Ukážka správy bude v zozname konverzácií a v upozorneniach vypnutá</string>
@@ -570,6 +576,7 @@
     <string name="open_thread">Prejsť na vlákno</string>
     <string name="pin_message">Pripnúť správu</string>
     <string name="pinned">Pripnuté</string>
+    <string name="pinned_dismiss">Odmietnuť</string>
     <string name="play_pause_voice_message">Prehrať/pozastaviť hlasovú správu</string>
     <string name="playback_speed_control">Ovládanie rýchlosti prehrávania</string>
     <string name="please_continue_the_login_process_in_the_browser">Pokračujte v prihlásení v prehliadači</string>

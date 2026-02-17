@@ -171,6 +171,7 @@
     <string name="nc_common_skip">Kihagyás</string>
     <string name="nc_common_unknown">Ismeretlen</string>
     <string name="nc_configure_cert_auth">Hitelesítési tanúsítvány kiválasztása</string>
+    <string name="nc_confirm">Megerősítés</string>
     <string name="nc_connecting_call">Csatlakozás…</string>
     <string name="nc_contacts_done">Kész</string>
     <string name="nc_conversation_description">Beszélgetés leírása</string>
@@ -394,8 +395,6 @@
     <string name="nc_push_notification_error">Sajnos valamilyen hiba történt, a hiba: %1$s</string>
     <string name="nc_push_notification_fetch_error">Sajnos valamilyen hiba történt, a leküldéses tesztüzenet nem kérhető le</string>
     <string name="nc_push_notification_message">A leküldéses értesítés sikeresen elküldve. Kapnia kellene egy „Leküldéses értesítések tesztelése” című üzenetet ezen az eszközön.</string>
-    <string name="nc_push_to_talk">Lenyomás a beszédhez</string>
-    <string name="nc_push_to_talk_desc">A mikrofon le lesz tiltva, a beszédhez tartsa lenyomva</string>
     <string name="nc_remind">Emlékeztessen később</string>
     <string name="nc_remove_from_favorites">Eltávolítás a kedvencekből</string>
     <string name="nc_remove_group_and_members">Csoport és tagok eltávolítása</string>
@@ -409,6 +408,7 @@
     <string name="nc_room_retention">A szoba sikeresen megtartva</string>
     <string name="nc_save_message">Mentés</string>
     <string name="nc_save_success">Sikeres mentés</string>
+    <string name="nc_scheduled_time">Ütemezett időpont</string>
     <string name="nc_screen_lock_timeout_30">30 másodperc</string>
     <string name="nc_screen_lock_timeout_300">5 perc</string>
     <string name="nc_screen_lock_timeout_60">1 perc</string>
@@ -422,6 +422,8 @@
     <string name="nc_search_clear">Keresés törlése</string>
     <string name="nc_select_an_account">Fiók kiválasztása</string>
     <string name="nc_send_edit_message">Üzenet frissítése</string>
+    <string name="nc_send_later">Küldés később</string>
+    <string name="nc_send_now">Küldés most</string>
     <string name="nc_send_voice_recording">Hangfelvétel küldése</string>
     <string name="nc_sensitive_conversation">Érzékeny beszélgetés</string>
     <string name="nc_sensitive_conversation_hint">Az üzenet-előnézet le lesz tiltva a beszélgetési listában és az értesítésekben</string>
@@ -567,6 +569,7 @@
     <string name="open_in_files_app">Megnyitás a Fájlok alkalmazásban</string>
     <string name="open_notes">Jegyzetek megnyitása</string>
     <string name="open_thread">Ugrás a szálhoz</string>
+    <string name="pinned_dismiss">Eltüntetés</string>
     <string name="play_pause_voice_message">Hangüzenet lejátszása/szüneteltetése</string>
     <string name="playback_speed_control">Lejátszási sebesség vezérlése</string>
     <string name="please_continue_the_login_process_in_the_browser">Folytassa a bejelentkezést a böngészőben</string>

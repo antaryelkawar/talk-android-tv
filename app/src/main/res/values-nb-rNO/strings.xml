@@ -153,6 +153,7 @@
     <string name="nc_common_skip">Hopp over</string>
     <string name="nc_common_unknown">Ukjent</string>
     <string name="nc_configure_cert_auth">Velg sertifikat for autentisering</string>
+    <string name="nc_confirm">Bekreft</string>
     <string name="nc_connecting_call">Kobler til...</string>
     <string name="nc_contacts_done">Ferdig</string>
     <string name="nc_conversation_description">Samtalebeskrivelse</string>
@@ -354,8 +355,6 @@
     <string name="nc_promote">Gi moderatorstatus</string>
     <string name="nc_public_call_status">Offentlig samtale</string>
     <string name="nc_push_disabled">Push notifisering deaktivert</string>
-    <string name="nc_push_to_talk">Trykk-for-å-snakke</string>
-    <string name="nc_push_to_talk_desc">Med mikrofonen avslått, klikk &amp; hold for å bruke klikk-for-å-snakke</string>
     <string name="nc_remind">Påminnn meg senere</string>
     <string name="nc_remove_from_favorites">Fjern fra favoritter</string>
     <string name="nc_remove_group_and_members">Fjern gruppe og medlemmer</string>
@@ -378,6 +377,8 @@
     <string name="nc_search">Søk</string>
     <string name="nc_search_clear">Tøm søk</string>
     <string name="nc_select_an_account">Velg en konto</string>
+    <string name="nc_send_later">Send senere</string>
+    <string name="nc_send_now">Send nå</string>
     <string name="nc_sent_a_gif" formatted="true">%1$s sendte en GIF.</string>
     <string name="nc_sent_a_gif_you">Du sendte en GIF.</string>
     <string name="nc_sent_a_video" formatted="true">%1$s sendte en video.</string>
@@ -503,6 +504,7 @@
     <string name="online_status">Online-status</string>
     <string name="openConversations">Åpne samtaler</string>
     <string name="open_in_files_app">Åpne i Filer-appen</string>
+    <string name="pinned_dismiss">Avvis</string>
     <string name="play_pause_voice_message">Spill/pause talemelding</string>
     <string name="polls_add_option">Legg til alternativ</string>
     <string name="polls_edit_vote">Rediger stemme</string>

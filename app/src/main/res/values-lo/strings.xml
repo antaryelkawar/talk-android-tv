@@ -171,6 +171,7 @@
     <string name="nc_common_skip">ຂ້າມໄປ</string>
     <string name="nc_common_unknown">ບໍ່ຮູ້</string>
     <string name="nc_configure_cert_auth">Select authentication certificate</string>
+    <string name="nc_confirm">ຢືນຢັນ</string>
     <string name="nc_connecting_call">Connecting …</string>
     <string name="nc_contacts_done">ສໍາເລັດ</string>
     <string name="nc_conversation_description">Conversation description</string>
@@ -394,8 +395,6 @@
     <string name="nc_push_notification_error"> Sorry something went wrong, error is %1$s</string>
     <string name="nc_push_notification_fetch_error">Sorry something went wrong, cannot fetch test push message</string>
     <string name="nc_push_notification_message">Push notification is sent successfully. You should now receive a notification on this device with the title \'Testing push notifications\'</string>
-    <string name="nc_push_to_talk">Push-to-talk</string>
-    <string name="nc_push_to_talk_desc">With microphone disabled, click&amp;hold to use Push-to-talk</string>
     <string name="nc_remind">Remind me later</string>
     <string name="nc_remove_from_favorites">ຍ້າຍຈາກລາຍການທີ່ມັກ</string>
     <string name="nc_remove_group_and_members">Remove group and members</string>
@@ -409,6 +408,7 @@
     <string name="nc_room_retention">Room is retained successfully</string>
     <string name="nc_save_message">ບັນທຶກ</string>
     <string name="nc_save_success">Saved successfully</string>
+    <string name="nc_scheduled_time">Scheduled time</string>
     <string name="nc_screen_lock_timeout_30">30 seconds</string>
     <string name="nc_screen_lock_timeout_300">5 minutes</string>
     <string name="nc_screen_lock_timeout_60">1 minute</string>
@@ -422,6 +422,8 @@
     <string name="nc_search_clear">Clear search</string>
     <string name="nc_select_an_account">Select an account</string>
     <string name="nc_send_edit_message">Update message</string>
+    <string name="nc_send_later">Send later</string>
+    <string name="nc_send_now">Send now</string>
     <string name="nc_send_voice_recording">Send voice recording</string>
     <string name="nc_sensitive_conversation">Sensitive conversation</string>
     <string name="nc_sensitive_conversation_hint">Message preview will be disabled in conversation list and notifications</string>
@@ -567,6 +569,7 @@
     <string name="open_in_files_app">Open in Files app</string>
     <string name="open_notes">Open Notes</string>
     <string name="open_thread">Go to thread</string>
+    <string name="pinned_dismiss">ຍົກເລີກ</string>
     <string name="play_pause_voice_message">Play/pause voice message</string>
     <string name="playback_speed_control">Playback speed control</string>
     <string name="please_continue_the_login_process_in_the_browser">Please continue login in browser</string>

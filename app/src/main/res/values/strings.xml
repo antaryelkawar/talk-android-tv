@@ -17,10 +17,10 @@ How to translate with transifex:
 -->
 
 <resources>
-    <!--
+<!--
   ~ Nextcloud Talk - Android Client
   ~
-  ~ SPDX-FileCopyrightText: 2017-2024 Nextcloud GmbH and Nextcloud contributors
+  ~ SPDX-FileCopyrightText: 2017-2026 Nextcloud GmbH and Nextcloud contributors
   ~ SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
@@ -368,9 +368,6 @@ How to translate with transifex:
     <string name="create_conversation">Create conversation</string>
     <string name="nc_add_emojis">Add emojis</string>
 
-
-    <string name="nc_push_to_talk">Push-to-talk</string>
-    <string name="nc_push_to_talk_desc">With microphone disabled, click&amp;hold to use Push-to-talk</string>
     <string name="nc_configure_cert_auth">Select authentication certificate</string>
     <string name="nc_change_cert_auth">Change authentication certificate</string>
 
@@ -551,6 +548,7 @@ How to translate with transifex:
     <string name="read_storage_no_permission">Sharing files from storage is not possible without permissions</string>
     <string name="open_in_files_app">Open in Files app</string>
     <string name="send_to_forbidden">You are not allowed to share content to this chat</string>
+    <string name="reaction_forbidden">You are not allowed to add or remove reactions in this conversation</string>
 
     <string name="typing_is_typing">is typing …</string>
     <string name="typing_are_typing">are typing …</string>
@@ -915,9 +913,13 @@ How to translate with transifex:
     <string name="pin_indefinitely">Pin indefinitely</string>
     <string name="pinned_indefinitely">Pinned indefinitely</string>
     <string name="pinned_until">Pinned until</string>
-    <string name="pinned_by">Pinned by</string>
+    <string name="pinned_by_you">%1$s (pinned by you)</string>
+    <string name="pinned_by_author">%1$s (pinned by %2$s)</string>
     <string name="pinned">Pinned</string>
     <string name="until_unpin">Until unpin</string>
+    <string name="pinned_go_to_message">Go to message</string>
+    <string name="pinned_dismiss">Dismiss</string>
+    <string name="pinned_message_options">Message options</string>
 
     <string name="nc_send_later">Send later</string>
     <string name="nc_schedule_message">Schedule message</string>
@@ -925,12 +927,12 @@ How to translate with transifex:
     <string name="nc_message_scheduled">Message scheduled</string>
     <string name="nc_message_scheduled_at">Message scheduled for %1$s</string>
     <string name="nc_scheduled_time">Scheduled time</string>
-    <string name="nc_reschedule_message">Reschedule</string>
+    <string name="nc_reschedule_message_with_notification">Reschedule with notification</string>
+    <string name="nc_reschedule_message_without_notification">Reschedule without notification</string>
     <string name="nc_send_now">Send now</string>
     <string name="nc_schedule_message_title">Schedule message</string>
     <string name="nc_scheduled_messages_empty">No scheduled messages</string>
     <string name="nc_schedule_message_without_notification">Send later without notification</string>
     <string name="nc_in_conversation">In %1$s</string>
-    <string name="no_scheduled_messages_offline">No connection to server - Scheduled messages could not be
-        loaded</string>
+    <string name="no_scheduled_messages_offline">No connection to server - Scheduled messages could not be loaded</string>
 </resources>

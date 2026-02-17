@@ -170,6 +170,7 @@
     <string name="nc_common_skip">Saltar</string>
     <string name="nc_common_unknown">Desconocido</string>
     <string name="nc_configure_cert_auth">Seleccionar certificado de autenticación</string>
+    <string name="nc_confirm">Confirmar</string>
     <string name="nc_connecting_call">Conectando …</string>
     <string name="nc_contacts_done">Hecho</string>
     <string name="nc_conversation_description">Descripción de la conversación</string>
@@ -392,8 +393,6 @@
     <string name="nc_push_notification_error">Lo sentimos, algo salió mal, el error es %1$s</string>
     <string name="nc_push_notification_fetch_error">Lo sentimos, algo salió mal, no se pudo obtener el mensaje push de prueba</string>
     <string name="nc_push_notification_message">La notificación push se envió exitosamente, Debería recibir una notificación en este dispositivo con el título \"Probando notificaciones push\"</string>
-    <string name="nc_push_to_talk">Push-to-talk</string>
-    <string name="nc_push_to_talk_desc">Con el micrófono deshabilitado, mantén pulsado &amp; para usar Push-to-talk</string>
     <string name="nc_remind">Recuérdamelo más tarde</string>
     <string name="nc_remove_from_favorites">Eliminar de favoritos</string>
     <string name="nc_remove_group_and_members">Eliminar grupo y miembros</string>
@@ -407,6 +406,7 @@
     <string name="nc_room_retention">Se retuvo la sala de manera exitosa</string>
     <string name="nc_save_message">Guardar</string>
     <string name="nc_save_success">Guardado correctamente</string>
+    <string name="nc_scheduled_time">Hora programada</string>
     <string name="nc_screen_lock_timeout_30">30 segundos</string>
     <string name="nc_screen_lock_timeout_300">5 minutos</string>
     <string name="nc_screen_lock_timeout_60">1 minuto</string>
@@ -420,6 +420,8 @@
     <string name="nc_search_clear">Limpiar búsqueda</string>
     <string name="nc_select_an_account">Selecciona una cuenta</string>
     <string name="nc_send_edit_message">Actualizar mensaje</string>
+    <string name="nc_send_later">Enviar más tarde</string>
+    <string name="nc_send_now">Enviar ahora</string>
     <string name="nc_send_voice_recording">Enviar grabación de voz</string>
     <string name="nc_sensitive_conversation">Conversación sensible</string>
     <string name="nc_sensitive_conversation_hint">La vista previa de los mensajes será deshabilitada en la lista de conversaciones y en las notificaciones</string>
@@ -566,6 +568,8 @@
     <string name="open_in_files_app">Abrir en app Archivos</string>
     <string name="open_notes">Abrir Notas</string>
     <string name="open_thread">Ir al hilo</string>
+    <string name="pinned_dismiss">Descartar</string>
+    <string name="pinned_message_options">Opciones de mensjes</string>
     <string name="play_pause_voice_message">Reproducir/pausar mensaje de voz</string>
     <string name="playback_speed_control">Control de velocidad de reproducción</string>
     <string name="polls_add_option">Añadir opción</string>

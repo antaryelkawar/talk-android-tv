@@ -171,6 +171,7 @@
     <string name="nc_common_skip">Atla</string>
     <string name="nc_common_unknown">Bilinmiyor</string>
     <string name="nc_configure_cert_auth">Kimlik doğrulama sertifikasını seçin</string>
+    <string name="nc_confirm">Onayla</string>
     <string name="nc_connecting_call">Bağlantı kuruluyor …</string>
     <string name="nc_contacts_done">Tamam</string>
     <string name="nc_conversation_description">Görüşme açıklaması</string>
@@ -394,8 +395,6 @@
     <string name="nc_push_notification_error">Ne yazık ki bir sorun çıktı. Hata: %1$s</string>
     <string name="nc_push_notification_fetch_error">Ne yazık ki bir sorun çıktı. Deneme anında bildirimi alınamadı</string>
     <string name="nc_push_notification_message">Anında bildirim gönderildi. Bu aygıtta \'Anlık bildirimler denemesi\' konulu bir bildirim almalısınız</string>
-    <string name="nc_push_to_talk">Bas konuş</string>
-    <string name="nc_push_to_talk_desc">Mikrofon kapalıyken, Bas-konuş üzerine tıklayıp basılı tutun</string>
     <string name="nc_remind">Sonra hatırlat</string>
     <string name="nc_remove_from_favorites">Sık kullanılanlardan kaldır</string>
     <string name="nc_remove_group_and_members">Grup ve üyelerini sil</string>
@@ -409,6 +408,10 @@
     <string name="nc_room_retention">Oda tutuldu</string>
     <string name="nc_save_message">Kaydet</string>
     <string name="nc_save_success">Kaydedildi</string>
+    <string name="nc_schedule_message">İletiyi zamanla</string>
+    <string name="nc_schedule_message_title">İletiyi zamanla</string>
+    <string name="nc_scheduled_messages">Zamanlanmış iletiler</string>
+    <string name="nc_scheduled_time">Planmış zaman</string>
     <string name="nc_screen_lock_timeout_30">30 saniye</string>
     <string name="nc_screen_lock_timeout_300">5 dakika</string>
     <string name="nc_screen_lock_timeout_60">1 dakika</string>
@@ -422,6 +425,8 @@
     <string name="nc_search_clear">Aramayı temizle</string>
     <string name="nc_select_an_account">Bir hesap seçin</string>
     <string name="nc_send_edit_message">İletiyi güncelle</string>
+    <string name="nc_send_later">Daha sonra gönder</string>
+    <string name="nc_send_now">Şimdi gönder</string>
     <string name="nc_send_voice_recording">Ses kaydını gönder</string>
     <string name="nc_sensitive_conversation">Ciddi görüşme</string>
     <string name="nc_sensitive_conversation_hint">Görüşme listesi ve bildirimlerde ileti ön izlemesi kapatılacak</string>
@@ -573,8 +578,9 @@
     <string name="pin_indefinitely">Süresiz sabitle</string>
     <string name="pin_message">İletiyi sabitle</string>
     <string name="pinned">Sabitlenmiş</string>
-    <string name="pinned_by">Sabitleyen</string>
+    <string name="pinned_dismiss">Yok say</string>
     <string name="pinned_indefinitely">Süresiz sabitlendi</string>
+    <string name="pinned_message_options">İleti seçenekleri</string>
     <string name="pinned_until">Şu zamana kadar sabitlendi</string>
     <string name="play_pause_voice_message">Ses iletisini oynat/duraklat</string>
     <string name="playback_speed_control">Oynatma hızı denetimi</string>

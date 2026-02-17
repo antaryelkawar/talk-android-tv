@@ -51,7 +51,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.graphics.toColorInt
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
 import autodagger.AutoInjector
@@ -130,6 +129,8 @@ import com.nextcloud.talk.viewmodels.CallRecordingViewModel.*
 import com.nextcloud.talk.webrtc.*
 import com.nextcloud.talk.webrtc.PeerConnectionWrapper.PeerConnectionObserver
 import com.nextcloud.talk.webrtc.WebRtcAudioManager.AudioDevice
+import com.nextcloud.talk.webrtc.WebSocketConnectionHelper
+import com.nextcloud.talk.webrtc.WebSocketInstance
 import com.wooplr.spotlight.SpotlightView
 import io.reactivex.Observable
 import io.reactivex.Observer
@@ -238,7 +239,6 @@ class CallActivity : CallBaseActivity() {
     private var pulseAnimation: PulseAnimation? = null
     private var baseUrl: String? = null
     private var roomId: String? = null
-    private var spotlightView: SpotlightView? = null
     private var isTvMode = false
     private val internalSignalingMessageReceiver = InternalSignalingMessageReceiver()
     private var signalingMessageReceiver: SignalingMessageReceiver? = null
@@ -640,7 +640,7 @@ class CallActivity : CallBaseActivity() {
         }
         return super.onKeyDown(keyCode, event)
     }
-    
+
     private fun showLeaveCallConfirmation() {
         val dialogBuilder = MaterialAlertDialogBuilder(this)
             .setTitle(R.string.nc_leaving_call)
@@ -659,12 +659,12 @@ class CallActivity : CallBaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        
+
         // Restore TV focus if needed
         if (isTvMode) {
             restoreTvFocus()
         }
-        
+
         if (hasSpreedFeatureCapability(
                 conversationUser.capabilities!!.spreedCapability!!,
                 SpreedFeatures.RECORDING_V1
@@ -675,7 +675,7 @@ class CallActivity : CallBaseActivity() {
             showCallRunningSinceOneHourOrMoreInfo()
         }
     }
-    
+
     private fun restoreTvFocus() {
         // Try to restore focus to a visible control button
         binding?.let { binding ->
@@ -1010,7 +1010,7 @@ class CallActivity : CallBaseActivity() {
         }
         initPipMode()
         binding!!.composeParticipantGrid.z = 0f
-        
+
         // Setup TV mode navigation
         if (isTvMode) {
             setupTvNavigation()
@@ -1038,53 +1038,53 @@ class CallActivity : CallBaseActivity() {
             updateUiForPipMode()
         }
     }
-    
+
     private fun setupTvNavigation() {
         Log.d(TAG, "Setting up TV navigation")
-        
+
         // Get all control buttons (only add visible ones)
         val controlButtons = mutableListOf<View>()
-        
+
         // Microphone button is always visible
         controlButtons.add(binding!!.microphoneButton)
-        
+
         // Camera button only in video calls
         if (!isVoiceOnlyCall && binding!!.cameraButton.visibility == View.VISIBLE) {
             controlButtons.add(binding!!.cameraButton)
         }
-        
+
         // Hangup button is always visible
         controlButtons.add(binding!!.hangupButton)
-        
+
         // Apply TV focus highlighting
         val focusColor = ContextCompat.getColor(this, R.color.colorPrimary)
         controlButtons.forEach { button ->
             TvUtils.applyTvFocusHighlight(button, focusColor)
         }
-        
+
         // Setup D-pad navigation between buttons
         TvUtils.setupDpadNavigation(controlButtons)
-        
+
         // Request focus on the first button (microphone)
         TvUtils.requestDefaultFocus(*controlButtons.toTypedArray())
-        
+
         // Adjust video aspect ratio for TV
         adjustVideoForTv()
     }
-    
+
     private fun adjustVideoForTv() {
         Log.d(TAG, "Adjusting video for TV aspect ratio")
-        
+
         // TV screens typically use 16:9 aspect ratio
         // Adjust self video view size
         val tvSelfVideoWidth = resources.getDimensionPixelSize(R.dimen.tv_self_video_width)
         val tvSelfVideoHeight = resources.getDimensionPixelSize(R.dimen.tv_self_video_height)
-        
+
         binding!!.selfVideoViewWrapper.layoutParams.width = tvSelfVideoWidth
         binding!!.selfVideoViewWrapper.layoutParams.height = tvSelfVideoHeight
         binding!!.selfVideoViewWrapper.requestLayout()
     }
-    
+
     private fun checkInitialDevicePermissions() {        val permissionsToRequest: MutableList<String> = ArrayList()
         val rationaleList: MutableList<String> = ArrayList()
         if (permissionUtil!!.isMicrophonePermissionGranted()) {
@@ -1319,10 +1319,6 @@ class CallActivity : CallBaseActivity() {
             return
         }
         if (permissionUtil!!.isMicrophonePermissionGranted()) {
-            if (!appPreferences.pushToTalkIntroShown) {
-                spotlightView = getSpotlightView()
-                appPreferences.pushToTalkIntroShown = true
-            }
             if (!isPushToTalkActive) {
                 microphoneOn = !microphoneOn
                 if (microphoneOn) {
@@ -1354,27 +1350,6 @@ class CallActivity : CallBaseActivity() {
         } else {
             requestPermissionLauncher.launch(PERMISSIONS_MICROPHONE)
         }
-    }
-
-    private fun getSpotlightView(): SpotlightView? {
-        val builder = SpotlightView.Builder(this)
-            .introAnimationDuration(INTRO_ANIMATION_DURATION)
-            .enableRevealAnimation(true)
-            .performClick(false)
-            .fadeinTextDuration(FADE_IN_ANIMATION_DURATION)
-            .headingTvSize(SPOTLIGHT_HEADING_SIZE)
-            .headingTvText(resources.getString(R.string.nc_push_to_talk))
-            .subHeadingTvColor(resources.getColor(R.color.bg_default, null))
-            .subHeadingTvSize(SPOTLIGHT_SUBHEADING_SIZE)
-            .subHeadingTvText(resources.getString(R.string.nc_push_to_talk_desc))
-            .maskColor("#dc000000".toColorInt())
-            .target(binding!!.microphoneButton)
-            .lineAnimDuration(FADE_IN_ANIMATION_DURATION)
-            .enableDismissAfterShown(true)
-            .dismissOnBackPress(true)
-            .usageId("pushToTalk")
-
-        return viewThemeUtils.talk.themeSpotlightView(context, builder).show()
     }
 
     private fun onCameraClick() {
@@ -1811,6 +1786,7 @@ class CallActivity : CallBaseActivity() {
             )
         ) {
             binding!!.callDuration.visibility = View.VISIBLE
+            callTimeHandler.removeCallbacksAndMessages(null)
             val currentTimeInSec = System.currentTimeMillis() / SECOND_IN_MILLIS
             elapsedSeconds = currentTimeInSec - callStartTime
 
@@ -3217,12 +3193,7 @@ class CallActivity : CallBaseActivity() {
         private const val ANGLE_LANDSCAPE_LEFT_THRESHOLD_MAX = 280
 
         private const val CALLING_TIMEOUT: Long = 45000
-        private const val INTRO_ANIMATION_DURATION: Long = 300
-        private const val FADE_IN_ANIMATION_DURATION: Long = 400
         private const val PULSE_ANIMATION_DURATION: Int = 310
-
-        private const val SPOTLIGHT_HEADING_SIZE: Int = 20
-        private const val SPOTLIGHT_SUBHEADING_SIZE: Int = 16
 
         private const val DELAY_ON_ERROR_STOP_THRESHOLD: Int = 16
 

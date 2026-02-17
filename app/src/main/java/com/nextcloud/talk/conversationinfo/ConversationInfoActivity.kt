@@ -600,8 +600,6 @@ class ConversationInfoActivity :
 
     private fun showSharedItems() {
         val intent = Intent(this, SharedItemsActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.putExtra(BundleKeys.KEY_CONVERSATION_NAME, conversation?.displayName)
         intent.putExtra(KEY_ROOM_TOKEN, conversationToken)
         intent.putExtra(
@@ -1163,7 +1161,7 @@ class ConversationInfoActivity :
                 } else {
                     viewModel.archiveConversation(conversationUser, conversationToken)
                     binding.archiveConversationIcon
-                        .setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_eye, null))
+                        .setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_unarchive_24px, null))
                     binding.archiveConversationText.text = resources.getString(R.string.unarchive_conversation)
                     binding.archiveConversationTextHint.text = resources.getString(R.string.unarchive_hint)
                 }
@@ -1173,7 +1171,7 @@ class ConversationInfoActivity :
 
         if (conversation!!.hasArchived) {
             binding.archiveConversationIcon
-                .setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_eye, null))
+                .setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_unarchive_24px, null))
             binding.archiveConversationText.text = resources.getString(R.string.unarchive_conversation)
             binding.archiveConversationTextHint.text = resources.getString(R.string.unarchive_hint)
         } else {

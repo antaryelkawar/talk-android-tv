@@ -170,6 +170,7 @@
     <string name="nc_common_skip">Spring over</string>
     <string name="nc_common_unknown">Ukendt</string>
     <string name="nc_configure_cert_auth">Vælg godkendelsescertifikat</string>
+    <string name="nc_confirm">Bekræft</string>
     <string name="nc_connecting_call">Forbinder ...</string>
     <string name="nc_contacts_done">Færdig</string>
     <string name="nc_conversation_description">Samtalebeskrivelse</string>
@@ -392,8 +393,6 @@
     <string name="nc_push_notification_error"> Desværre, noget gik galt, fejlen er %1$s</string>
     <string name="nc_push_notification_fetch_error">Desværre, noget gik galt, kan ikke hente test push besked</string>
     <string name="nc_push_notification_message">Push notifikation afsendt. Du bør nu modtage en notifikation på apparatet med titlen \'Test push notifikationer\'</string>
-    <string name="nc_push_to_talk">Tryk-for-at-tale</string>
-    <string name="nc_push_to_talk_desc">Med mikrofonen deaktiveret, hold&amp;nede for at bruge Tryk-for-at-tale</string>
     <string name="nc_remind">Påmind mig senere</string>
     <string name="nc_remove_from_favorites">Fjern fra favoritter</string>
     <string name="nc_remove_group_and_members">Fjern gruppe og medlemmer</string>
@@ -420,6 +419,8 @@
     <string name="nc_search_clear">Ryd søgning</string>
     <string name="nc_select_an_account">Vælg konto</string>
     <string name="nc_send_edit_message">Opdater besked</string>
+    <string name="nc_send_later">Send senere</string>
+    <string name="nc_send_now">Send nu</string>
     <string name="nc_send_voice_recording">Send stemmeoptagelse</string>
     <string name="nc_sensitive_conversation">Følsom samtale</string>
     <string name="nc_sensitive_conversation_hint">Besked forhåndsvisning vil blive deaktiveret i samtalelisten og notifikationer</string>
@@ -565,6 +566,7 @@
     <string name="open_in_files_app">Åben i appe\'en filer</string>
     <string name="open_notes">Åben noter</string>
     <string name="open_thread">Gå til tråd</string>
+    <string name="pinned_dismiss">Afvis</string>
     <string name="play_pause_voice_message">Afspil/pauser stemmebesked</string>
     <string name="playback_speed_control">Afspilningshastighedskontrol</string>
     <string name="polls_add_option">Tilføj valg</string>

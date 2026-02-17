@@ -171,6 +171,7 @@
     <string name="nc_common_skip">Pular</string>
     <string name="nc_common_unknown">Desconhecido</string>
     <string name="nc_configure_cert_auth">Selecionar certificado de autenticação</string>
+    <string name="nc_confirm">Confirmar</string>
     <string name="nc_connecting_call">Conectando …</string>
     <string name="nc_contacts_done">Concluído</string>
     <string name="nc_conversation_description">Descrição da conversa</string>
@@ -300,6 +301,7 @@
     <string name="nc_ignore_battery_optimization_dialog_title">Ignorar otimização da bateria</string>
     <string name="nc_important_conversation">Conversa importante</string>
     <string name="nc_important_conversation_desc">O status de usuário \"Não perturbe\" é ignorado em conversas importantes</string>
+    <string name="nc_in_conversation">Em %1$s</string>
     <string name="nc_invalid_time">Horário inválido</string>
     <string name="nc_invitations">Convites</string>
     <string name="nc_join_open_conversations">Entrar em conversas abertas</string>
@@ -334,6 +336,8 @@
     <string name="nc_message_offline">Off-line</string>
     <string name="nc_message_quote_cancel_reply">Cancelar resposta</string>
     <string name="nc_message_read">Mensagem lida</string>
+    <string name="nc_message_scheduled">Mensagem agendada</string>
+    <string name="nc_message_scheduled_at">Mensagem agendada para %1$s</string>
     <string name="nc_message_sending">Enviando</string>
     <string name="nc_message_sent">Mensagem enviada</string>
     <string name="nc_microphone_enabled_audio_recording">O microfone está ativado e o áudio está sendo gravado</string>
@@ -394,8 +398,6 @@
     <string name="nc_push_notification_error">Desculpe, algo deu errado, o erro é %1$s</string>
     <string name="nc_push_notification_fetch_error">Desculpe, algo deu errado, não foi possível obter a mensagem push de teste</string>
     <string name="nc_push_notification_message">A notificação push foi enviada com êxito. Agora você deve receber uma notificação neste dispositivo com o título \'Testando notificações push\'</string>
-    <string name="nc_push_to_talk">Pressione-para-falar</string>
-    <string name="nc_push_to_talk_desc">Com o microfone desativado, clique&amp; para usar Pressione-para-falar</string>
     <string name="nc_remind">Lembre-me mais tarde</string>
     <string name="nc_remove_from_favorites">Remover dos favoritos</string>
     <string name="nc_remove_group_and_members">Remover grupo e membros</string>
@@ -409,6 +411,12 @@
     <string name="nc_room_retention">A sala é mantida com sucesso</string>
     <string name="nc_save_message">Salvar</string>
     <string name="nc_save_success">Salvo com sucesso</string>
+    <string name="nc_schedule_message">Agendar mensagem</string>
+    <string name="nc_schedule_message_title">Agendar mensagem</string>
+    <string name="nc_schedule_message_without_notification">Enviar mais tarde sem notificação</string>
+    <string name="nc_scheduled_messages">Mensagens agendadas</string>
+    <string name="nc_scheduled_messages_empty">Nenhuma mensagem agendada</string>
+    <string name="nc_scheduled_time">Horário agendado</string>
     <string name="nc_screen_lock_timeout_30">30 segundos</string>
     <string name="nc_screen_lock_timeout_300">5 minutos</string>
     <string name="nc_screen_lock_timeout_60">1 minuto</string>
@@ -422,6 +430,8 @@
     <string name="nc_search_clear">Limpar pesquisa</string>
     <string name="nc_select_an_account">Selecionar uma conta</string>
     <string name="nc_send_edit_message">Atualizar mensagem</string>
+    <string name="nc_send_later">Enviar mais tarde</string>
+    <string name="nc_send_now">Enviar agora</string>
     <string name="nc_send_voice_recording">Enviar gravação de voz</string>
     <string name="nc_sensitive_conversation">Conversa sensível</string>
     <string name="nc_sensitive_conversation_hint">A visualização de mensagens será desativada na lista de conversas e nas notificações</string>
@@ -555,6 +565,7 @@
     <string name="no_conversations_archived">Nenhuma conversa arquivada</string>
     <string name="no_offline_messages_saved">Nenhuma mensagem off-line foi salva</string>
     <string name="no_phone_book_integration_due_to_permissions">Sem integração de número de telefone devido à falta de permissões</string>
+    <string name="no_scheduled_messages_offline">Sem conexão com o servidor - Não foi possível carregar as mensagens agendadas</string>
     <string name="notification_all_messages">Todas as mensagens</string>
     <string name="notification_mention_only">Apenas menções de @</string>
     <string name="notification_off">Desativadas</string>
@@ -573,8 +584,12 @@
     <string name="pin_indefinitely">Fixar indefinidamente</string>
     <string name="pin_message">Fixar mensagem</string>
     <string name="pinned">Fixada</string>
-    <string name="pinned_by">Fixada por</string>
+    <string name="pinned_by_author">%1$s (fixada por %2$s)</string>
+    <string name="pinned_by_you">%1$s (fixada por você)</string>
+    <string name="pinned_dismiss">Descartar</string>
+    <string name="pinned_go_to_message">Ir para mensagem</string>
     <string name="pinned_indefinitely">Fixada indefinidamente</string>
+    <string name="pinned_message_options">Opções de mensagem</string>
     <string name="pinned_until">Fixada até</string>
     <string name="play_pause_voice_message">Reproduzir/pausar mensagem de voz</string>
     <string name="playback_speed_control">Controle de velocidade de reprodução</string>
@@ -598,6 +613,7 @@
     <string name="previously_set">Definido anteriormente</string>
     <string name="qr_code_error">Não foi possível ler o código QR</string>
     <string name="raise_hand">Levantar mão</string>
+    <string name="reaction_forbidden">Você não tem permissão para adicionar ou remover reações nesta conversa</string>
     <string name="reactions_tab_all">Todos</string>
     <string name="read_storage_no_permission">O compartilhamento de arquivos do armazenamento não é possível sem permissões</string>
     <string name="recent_threads">Fios recentes</string>

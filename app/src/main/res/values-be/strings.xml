@@ -171,6 +171,7 @@
     <string name="nc_common_skip">Прапусціць</string>
     <string name="nc_common_unknown">Невядомы</string>
     <string name="nc_configure_cert_auth">Выберыце сертыфікат аўтэнтыфікацыі</string>
+    <string name="nc_confirm">Пацвердзіць</string>
     <string name="nc_connecting_call">Злучэнне …</string>
     <string name="nc_contacts_done">Гатова</string>
     <string name="nc_conversation_description">Апісанне размовы</string>
@@ -300,6 +301,7 @@
     <string name="nc_ignore_battery_optimization_dialog_title">Ігнараваць аптымізацыю батарэі</string>
     <string name="nc_important_conversation">Важная размова</string>
     <string name="nc_important_conversation_desc">Статус карыстальніка \"Не турбаваць\" ігнаруецца падчас важных размоў</string>
+    <string name="nc_in_conversation">У %1$s</string>
     <string name="nc_invalid_time">Памылковы час</string>
     <string name="nc_invitations">Запрашэнні</string>
     <string name="nc_join_open_conversations">Далучыцца да адкрытых размоў</string>
@@ -334,6 +336,8 @@
     <string name="nc_message_offline">Па-за сеткай</string>
     <string name="nc_message_quote_cancel_reply">Скасаваць адказ</string>
     <string name="nc_message_read">Паведамленне прачытана</string>
+    <string name="nc_message_scheduled">Паведамленне запланавана</string>
+    <string name="nc_message_scheduled_at">Паведамленне запланавана на %1$s</string>
     <string name="nc_message_sending">Адпраўка</string>
     <string name="nc_message_sent">Паведамленне адпраўлена</string>
     <string name="nc_microphone_enabled_audio_recording">Мікрафон уключаны, і гук запісваецца</string>
@@ -394,8 +398,6 @@
     <string name="nc_push_notification_error">Нешта пайшло не так, памылка: %1$s</string>
     <string name="nc_push_notification_fetch_error">Нешта пайшло не так, не ўдалося атрымаць тэставае push-паведамленне</string>
     <string name="nc_push_notification_message">Push-апавяшчэнне паспяхова адпраўлена. Цяпер вы павінны атрымацьна гэтай прыладзе  апавяшчэнне з назвай \"Тэставае push-апавяшчэнне\".</string>
-    <string name="nc_push_to_talk">Націсні і гавары</string>
-    <string name="nc_push_to_talk_desc">Калі мікрафон адключаны, націсніце і ўтрымлівайце, каб выкарыстоўваць функцыю «Націсні і гавары»</string>
     <string name="nc_remind">Нагадаць пазней</string>
     <string name="nc_remove_from_favorites">Выдаліць з абранага</string>
     <string name="nc_remove_group_and_members">Выдаліць групу і ўдзельнікаў</string>
@@ -409,6 +411,12 @@
     <string name="nc_room_retention">Пакой паспяхова захаваны</string>
     <string name="nc_save_message">Захаваць</string>
     <string name="nc_save_success">Паспяхова захавана</string>
+    <string name="nc_schedule_message">Запланаваць паведамленне</string>
+    <string name="nc_schedule_message_title">Запланаваць паведамленне</string>
+    <string name="nc_schedule_message_without_notification">Адправіць пазней без апавяшчэння</string>
+    <string name="nc_scheduled_messages">Запланаваныя паведамленні</string>
+    <string name="nc_scheduled_messages_empty">Няма запланаваных апавяшчэнняў</string>
+    <string name="nc_scheduled_time">Запланаваны час</string>
     <string name="nc_screen_lock_timeout_30">30 секунд</string>
     <string name="nc_screen_lock_timeout_300">5 хвілін</string>
     <string name="nc_screen_lock_timeout_60">1 хвіліна</string>
@@ -422,6 +430,8 @@
     <string name="nc_search_clear">Ачысціць пошук</string>
     <string name="nc_select_an_account">Выберыце ўліковы запіс</string>
     <string name="nc_send_edit_message">Абнавіць паведамленне</string>
+    <string name="nc_send_later">Адправіць пазней</string>
+    <string name="nc_send_now">Адправіць зараз</string>
     <string name="nc_send_voice_recording">Адправіць галасавы запіс</string>
     <string name="nc_sensitive_conversation">Сакрэтная размова</string>
     <string name="nc_sensitive_conversation_hint">Перадпрагляд паведамленняў будзе адключаны ў спісе размоў і апавяшчэннях</string>
@@ -555,6 +565,7 @@
     <string name="no_conversations_archived">Няма архіваваных размоў</string>
     <string name="no_offline_messages_saved">Няма захаваных пазасеткавых паведамленняў</string>
     <string name="no_phone_book_integration_due_to_permissions">Няма інтэграцыі нумара тэлефона з-за адсутнасці дазволаў</string>
+    <string name="no_scheduled_messages_offline">Няма злучэння з серверам — не ўдалося загрузіць запланаваныя паведамленні</string>
     <string name="notification_all_messages">Усе паведамленні</string>
     <string name="notification_mention_only">Толькі згадкі з @</string>
     <string name="notification_off">Выкл.</string>
@@ -573,7 +584,7 @@
     <string name="pin_indefinitely">Замацаваць на нявызначаны тэрмін</string>
     <string name="pin_message">Замацаваць паведамленне</string>
     <string name="pinned">Замацавана</string>
-    <string name="pinned_by">Замацаваў(-ла)</string>
+    <string name="pinned_dismiss">Адхіліць</string>
     <string name="pinned_indefinitely">Замацавана на нявызначаны тэрмін</string>
     <string name="pinned_until">Замацавана да</string>
     <string name="play_pause_voice_message">Прайграць/прыпыніць галасавое паведамленне</string>

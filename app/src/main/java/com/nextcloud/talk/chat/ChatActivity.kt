@@ -232,7 +232,11 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -652,55 +656,54 @@ class ChatActivity :
         this.lifecycle.removeObserver(chatViewModel)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @SuppressLint("NotifyDataSetChanged", "SetTextI18n", "ResourceAsColor")
     @Suppress("LongMethod")
     private fun initObservers() {
         Log.d(TAG, "initObservers Called")
-
-        this.lifecycleScope.launch {
+        lifecycleScope.launch {
             chatViewModel.getConversationFlow
-                .collect { conversationModel ->
+                .onEach { conversationModel ->
                     currentConversation = conversationModel
-                    chatViewModel.updateConversation(
-                        currentConversation!!
-                    )
-
+                    chatViewModel.updateConversation(conversationModel)
                     logConversationInfos("GetRoomSuccessState")
 
                     if (adapter == null) {
                         initAdapter()
                         binding.messagesListView.setAdapter(adapter)
-                        layoutManager = binding.messagesListView.layoutManager as LinearLayoutManager?
+                        layoutManager = binding.messagesListView.layoutManager as? LinearLayoutManager
                     }
 
-                    chatViewModel.getCapabilities(conversationUser!!, roomToken, currentConversation!!)
-
+                    chatViewModel.getCapabilities(conversationUser!!, roomToken, conversationModel)
+                }
+                .flatMapLatest { conversationModel ->
                     if (conversationModel.lastPinnedId != null &&
                         conversationModel.lastPinnedId != 0L &&
                         conversationModel.lastPinnedId != conversationModel.hiddenPinnedId
                     ) {
-                        chatViewModel
-                            .getIndividualMessageFromServer(
-                                credentials!!,
-                                conversationUser?.baseUrl!!,
-                                roomToken,
-                                conversationModel.lastPinnedId.toString()
+                        chatViewModel.getIndividualMessageFromServer(
+                            credentials!!,
+                            conversationUser?.baseUrl!!,
+                            roomToken,
+                            conversationModel.lastPinnedId.toString()
+                        )
+                    } else {
+                        flowOf(null)
+                    }
+                }
+                .collectLatest { message ->
+                    if (message != null) {
+                        binding.pinnedMessageContainer.visibility = View.VISIBLE
+                        binding.pinnedMessageComposeView.setContent {
+                            PinnedMessageView(
+                                message,
+                                viewThemeUtils,
+                                currentConversation,
+                                scrollToMessageWithIdWithOffset = ::scrollToMessageWithIdWithOffset,
+                                hidePinnedMessage = ::hidePinnedMessage,
+                                unPinMessage = ::unPinMessage
                             )
-                            .collect { message ->
-                                message?.let {
-                                    binding.pinnedMessageContainer.visibility = View.VISIBLE
-                                    binding.pinnedMessageComposeView.setContent {
-                                        PinnedMessageView(
-                                            message,
-                                            viewThemeUtils,
-                                            currentConversation,
-                                            scrollToMessageWithIdWithOffset = ::scrollToMessageWithIdWithOffset,
-                                            hidePinnedMessage = ::hidePinnedMessage,
-                                            unPinMessage = ::unPinMessage
-                                        )
-                                    }
-                                }
-                            }
+                        }
                     } else {
                         binding.pinnedMessageContainer.visibility = View.GONE
                     }
@@ -956,6 +959,7 @@ class ChatActivity :
                     val scheduledTimeText = dateUtils.getLocalDateTimeStringFromTimestamp(
                         scheduledAt * DateConstants.SECOND_DIVIDER
                     )
+                    messageInputFragment.onScheduledMessageSent()
                     Snackbar.make(
                         binding.root,
                         getString(R.string.nc_message_scheduled_at, scheduledTimeText),
@@ -1864,8 +1868,10 @@ class ChatActivity :
                 this,
                 object : MessageSwipeActions {
                     override fun showReplyUI(position: Int) {
-                        val chatMessage = adapter?.items?.getOrNull(position)?.item as ChatMessage?
-                        if (chatMessage != null) {
+                        val chatMessage = adapter?.items?.getOrNull(position)?.item as ChatMessage? ?: return
+                        if (chatMessage.isThread && conversationThreadId == null) {
+                            openThread(chatMessage)
+                        } else {
                             messageInputViewModel.reply(chatMessage)
                         }
                     }
@@ -2543,7 +2549,7 @@ class ChatActivity :
             (layoutManager as LinearLayoutManager).scrollToPositionWithOffset(position, 500)
         } else {
             Log.d(TAG, "message $messageId that should be scrolled to was not found (scrollToMessageWithId)")
-            startContextChatWindowForMessage(messageId, conversationThreadId.toString())
+            startContextChatWindowForMessage(messageId, conversationThreadId?.toString())
         }
     }
 
@@ -3498,6 +3504,10 @@ class ChatActivity :
         val intent = Intent(this, ScheduledMessagesActivity::class.java).apply {
             putExtra(ScheduledMessagesActivity.ROOM_TOKEN, roomToken)
             putExtra(ScheduledMessagesActivity.CONVERSATION_NAME, currentConversation?.displayName.orEmpty())
+            if (conversationThreadId != null && conversationThreadId!! > 0) {
+                putExtra(ScheduledMessagesActivity.THREAD_ID, conversationThreadId)
+                putExtra(ScheduledMessagesActivity.THREAD_TITLE, conversationThreadInfo?.thread?.title.orEmpty())
+            }
         }
         startActivity(intent)
     }
@@ -3523,7 +3533,6 @@ class ChatActivity :
                             roomToken
                         ),
                         message = message,
-                        displayName = conversationUser!!.displayName ?: "",
                         replyTo = replyToMessageId,
                         sendWithoutNotification = sendWithoutNotification,
                         threadTitle = threadTitle,
@@ -3544,12 +3553,20 @@ class ChatActivity :
         if (!this::spreedCapabilities.isInitialized) {
             return
         }
-        chatViewModel.loadScheduledMessages(
-            conversationUser.getCredentials(),
+        val scheduledMessagesUrl = if (isChatThread()) {
+            ApiUtils.getUrlForScheduledMessages(
+                conversationUser.baseUrl!!,
+                roomToken
+            ) + "?threadId=${conversationThreadId ?: 0L}"
+        } else {
             ApiUtils.getUrlForScheduledMessages(
                 conversationUser.baseUrl!!,
                 roomToken
             )
+        }
+        chatViewModel.loadScheduledMessages(
+            conversationUser.getCredentials(),
+            scheduledMessagesUrl
         )
     }
 
@@ -3975,6 +3992,10 @@ class ChatActivity :
     }
 
     override fun onClickReaction(chatMessage: ChatMessage, emoji: String) {
+        if (!participantPermissions.hasReactPermission()) {
+            Snackbar.make(binding.root, R.string.reaction_forbidden, Snackbar.LENGTH_LONG).show()
+            return
+        }
         VibrationUtils.vibrateShort(context)
         if (chatMessage.reactionsSelf?.contains(emoji) == true) {
             chatViewModel.deleteReaction(roomToken, chatMessage, emoji)
@@ -3993,7 +4014,7 @@ class ChatActivity :
             roomToken,
             chatMessage,
             conversationUser,
-            participantPermissions.hasChatPermission(),
+            participantPermissions.hasReactPermission(),
             ncApi
         ).show()
     }
@@ -4028,6 +4049,7 @@ class ChatActivity :
                 currentConversation,
                 isShowMessageDeletionButton(message),
                 participantPermissions.hasChatPermission(),
+                participantPermissions.hasReactPermission(),
                 spreedCapabilities
             ).show()
         }

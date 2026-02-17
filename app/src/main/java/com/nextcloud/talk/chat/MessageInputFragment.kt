@@ -134,6 +134,7 @@ class MessageInputFragment : Fragment() {
     private var collapsed = false
     private var hasScheduledMessages = false
     private lateinit var spreedCapabilities: SpreedCapability
+    private var hasSharedText = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -142,6 +143,7 @@ class MessageInputFragment : Fragment() {
         chatActivity = requireActivity() as ChatActivity
         val sharedText = arguments?.getString(BundleKeys.KEY_SHARED_TEXT).orEmpty()
         if (sharedText.isNotEmpty()) {
+            hasSharedText = true
             chatActivity.chatViewModel.messageDraft.messageText = sharedText
             chatActivity.chatViewModel.saveMessageDraft()
         }
@@ -218,7 +220,18 @@ class MessageInputFragment : Fragment() {
         }
 
         chatActivity.chatViewModel.scheduledMessagesCount.observe(viewLifecycleOwner) { count ->
-            updateScheduledMessagesAvailability(count > 0)
+            if (chatActivity.conversationThreadId != null && chatActivity.conversationThreadId!! > 0) {
+                val threadId = chatActivity.conversationThreadId
+                val scheduledState = chatActivity.chatViewModel.scheduledMessagesViewState.value
+                val threadCount = if (scheduledState is ChatViewModel.ScheduledMessagesSuccessState) {
+                    scheduledState.messages.count { it.threadId == threadId }
+                } else {
+                    0
+                }
+                updateScheduledMessagesAvailability(threadCount > 0)
+            } else {
+                updateScheduledMessagesAvailability(count > 0)
+            }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -361,9 +374,17 @@ class MessageInputFragment : Fragment() {
         }
     }
 
+    fun onScheduledMessageSent() {
+        binding.fragmentMessageInputView.inputEditText?.setText("")
+        cancelReply()
+        cancelCreateThread()
+    }
+
     private fun restoreState() {
         CoroutineScope(Dispatchers.IO).launch {
-            chatActivity.chatViewModel.updateMessageDraft()
+            if (!hasSharedText) {
+                chatActivity.chatViewModel.updateMessageDraft()
+            }
 
             withContext(Dispatchers.Main) {
                 val draft = chatActivity.chatViewModel.messageDraft
@@ -789,15 +810,12 @@ class MessageInputFragment : Fragment() {
             if (message.isBlank()) {
                 return
             }
-            binding.fragmentMessageInputView.inputEditText?.setText("")
             chatActivity.showScheduleMessageDialog(
                 message = message,
                 sendWithoutNotification = sendWithoutNotification,
                 replyToMessageId = chatActivity.getReplyToMessageId(),
                 threadTitle = chatActivity.chatViewModel.messageDraft.threadTitle
             )
-            cancelReply()
-            cancelCreateThread()
         }
     }
 

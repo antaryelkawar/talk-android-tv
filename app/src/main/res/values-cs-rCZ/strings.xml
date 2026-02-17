@@ -171,6 +171,7 @@
     <string name="nc_common_skip">Přeskočit</string>
     <string name="nc_common_unknown">Neznámé</string>
     <string name="nc_configure_cert_auth">Vyberte certifikát pro ověřování se</string>
+    <string name="nc_confirm">Potvrdit</string>
     <string name="nc_connecting_call">Připojování …</string>
     <string name="nc_contacts_done">Hotovo</string>
     <string name="nc_conversation_description">Popis konverzace</string>
@@ -300,6 +301,7 @@
     <string name="nc_ignore_battery_optimization_dialog_title">Ignorovat úsporu energie z akumulátoru</string>
     <string name="nc_important_conversation">Důležitá konverzace</string>
     <string name="nc_important_conversation_desc">Stav uživatele „Nevyrušovat“ bude v případě důležitých konverzací ignorován</string>
+    <string name="nc_in_conversation">V %1$s</string>
     <string name="nc_invalid_time">Neplatný čas</string>
     <string name="nc_invitations">Pozvání</string>
     <string name="nc_join_open_conversations">Přidat se do všem přístupných konverzací</string>
@@ -334,6 +336,8 @@
     <string name="nc_message_offline">Bez připojení</string>
     <string name="nc_message_quote_cancel_reply">Odebrat odpověď</string>
     <string name="nc_message_read">Zpráva přečtena</string>
+    <string name="nc_message_scheduled">Zpráva naplánována</string>
+    <string name="nc_message_scheduled_at">Zpráva naplánována pro %1$s</string>
     <string name="nc_message_sending">Odesílání</string>
     <string name="nc_message_sent">Zpráva odeslána</string>
     <string name="nc_microphone_enabled_audio_recording">Mikrofon je povolený a zvuk se nahrává</string>
@@ -394,8 +398,6 @@
     <string name="nc_push_notification_error">Omlouváme se, něco se pokazilo – chyba je %1$s</string>
     <string name="nc_push_notification_fetch_error">Omlouváme se, něco se pokazilo – nebylo možné stáhnout si testovací push zprávu</string>
     <string name="nc_push_notification_message">Push upozornění úspěšně odesláno. Nyní byste měli obdržet upozornění na tomto zařízení s nadpisem „Testování push upozorňování“</string>
-    <string name="nc_push_to_talk">Vysílačka</string>
-    <string name="nc_push_to_talk_desc">Při vypnutém mikrofonu, klikněte a dokud držíte, můžete mluvit – jako u vysílačky</string>
     <string name="nc_remind">Připomenout později</string>
     <string name="nc_remove_from_favorites">Odebrat z oblíbených</string>
     <string name="nc_remove_group_and_members">Odebrat skupinu a její členy</string>
@@ -409,6 +411,12 @@
     <string name="nc_room_retention">Místnost je úspěšně ponechána</string>
     <string name="nc_save_message">Uložit</string>
     <string name="nc_save_success">Úspěšně uloženo</string>
+    <string name="nc_schedule_message">Naplánovat zprávu</string>
+    <string name="nc_schedule_message_title">Naplánovat zprávu</string>
+    <string name="nc_schedule_message_without_notification">Odeslat později bez notifikace</string>
+    <string name="nc_scheduled_messages">Naplánované zprávy</string>
+    <string name="nc_scheduled_messages_empty">Žádné naplánvané zprávy</string>
+    <string name="nc_scheduled_time">Naplánovaný čas</string>
     <string name="nc_screen_lock_timeout_30">30 sekund</string>
     <string name="nc_screen_lock_timeout_300">5 minut</string>
     <string name="nc_screen_lock_timeout_60">1 minuta</string>
@@ -422,6 +430,8 @@
     <string name="nc_search_clear">Vyčistit hledání</string>
     <string name="nc_select_an_account">Vyberte účet</string>
     <string name="nc_send_edit_message">Aktualizovat zprávu</string>
+    <string name="nc_send_later">Odeslat později</string>
+    <string name="nc_send_now">Odeslat nyní</string>
     <string name="nc_send_voice_recording">Odeslat hlasovou nahrávku</string>
     <string name="nc_sensitive_conversation">Citlivá konverzace</string>
     <string name="nc_sensitive_conversation_hint">Náhled zprávy bude vypnut pro seznam konverzací a notifikace</string>
@@ -555,6 +565,7 @@
     <string name="no_conversations_archived">Žádné archivované konverzace</string>
     <string name="no_offline_messages_saved">Neuloženy žádné zprávy pro režim bez připojení</string>
     <string name="no_phone_book_integration_due_to_permissions">Není možné propojit telefonní čísla, protože chybí potřebná oprávnění</string>
+    <string name="no_scheduled_messages_offline">Není spojení se serverem – Naplánované zprávy proto nebylo možné načíst</string>
     <string name="notification_all_messages">Všechny zprávy</string>
     <string name="notification_mention_only">Pouze zmínky ve stylu @jméno</string>
     <string name="notification_off">Vypnuto</string>
@@ -573,8 +584,12 @@
     <string name="pin_indefinitely">Připnout na neurčito</string>
     <string name="pin_message">Připnout zprávu</string>
     <string name="pinned">Připnuté</string>
-    <string name="pinned_by">Připnuto uživatelem</string>
+    <string name="pinned_by_author">%1$s (připonul/a %2$s)</string>
+    <string name="pinned_by_you">%1$s (připnuli jste)</string>
+    <string name="pinned_dismiss">Zahodit</string>
+    <string name="pinned_go_to_message">Přejít na zprávu</string>
     <string name="pinned_indefinitely">Připnuto na neurčito</string>
+    <string name="pinned_message_options">Předvolby zprávy</string>
     <string name="pinned_until">Připnuto do</string>
     <string name="play_pause_voice_message">Přehrát/pozastavit hlasovou zprávu</string>
     <string name="playback_speed_control">Ovládání rychlosti přehrávání</string>
@@ -598,6 +613,7 @@
     <string name="previously_set">Dříve nastavené</string>
     <string name="qr_code_error">QR kód se nepodařilo načíst</string>
     <string name="raise_hand">Hlásit se</string>
+    <string name="reaction_forbidden">Nemáte oprávnění přidávat nebo odebírat reakce v této konverzaci</string>
     <string name="reactions_tab_all">Vše</string>
     <string name="read_storage_no_permission">Sdílení souborů z úložiště není možné bez oprávnění</string>
     <string name="recent_threads">Nedávná vlákna</string>
