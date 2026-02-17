@@ -23,6 +23,7 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -94,6 +95,9 @@ import com.nextcloud.talk.models.json.autocomplete.AutocompleteUser
 import com.nextcloud.talk.utils.CapabilitiesUtil
 import com.nextcloud.talk.utils.PickImage
 import com.nextcloud.talk.utils.bundle.BundleKeys
+import com.nextcloud.talk.utils.isTvMode
+import com.nextcloud.talk.utils.tvDpadHandler
+import com.nextcloud.talk.utils.tvFocusHighlight
 import javax.inject.Inject
 
 @AutoInjector(NextcloudTalkApplication::class)
@@ -173,11 +177,21 @@ fun ConversationCreationScreen(
         }
     )
 
+    val isTv = isTvMode()
+    val tvModifier = if (isTv) {
+        Modifier.tvDpadHandler(
+            onBack = { (context as? Activity)?.finish() }
+        )
+    } else {
+        Modifier
+    }
+
     ColoredStatusBar()
     Scaffold(
         modifier = Modifier
             .statusBarsPadding()
-            .displayCutoutPadding(),
+            .displayCutoutPadding()
+            .then(tvModifier),
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(id = R.string.nc_new_conversation)) },
@@ -703,6 +717,7 @@ fun CreateConversation(conversationCreationViewModel: ConversationCreationViewMo
         contentAlignment = Alignment.Center
     ) {
         Button(
+            modifier = Modifier.focusable(),
             onClick = {
                 conversationCreationViewModel.createRoomAndAddParticipants(
                     roomType = CompanionClass.ROOM_TYPE_GROUP,

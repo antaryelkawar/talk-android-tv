@@ -12,55 +12,71 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.view.KeyEvent
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ScrollView
 import androidx.annotation.ColorInt
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.nativeKeyCode
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.recyclerview.widget.RecyclerView
 
 object TvUtils {
-    
-    /**
-     * Check if the device is running in TV mode
-     */
+
     fun isTvMode(context: Context): Boolean {
         val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
         return uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
     }
 
-    /**
-     * Check if device has a large screen suitable for TV
-     */
     fun isLargeScreen(context: Context): Boolean {
         val screenLayout = context.resources.configuration.screenLayout
         val screenSize = screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK
         return screenSize >= Configuration.SCREENLAYOUT_SIZE_LARGE
     }
 
-    /**
-     * Get TV aspect ratio (16:9 is most common for TVs)
-     */
     fun getTvAspectRatio(): Float {
         return 16f / 9f
     }
 
-    /**
-     * Apply TV-friendly focus highlighting to a view
-     */
     fun applyTvFocusHighlight(view: View, @ColorInt focusColor: Int) {
         view.isFocusable = true
         view.isFocusableInTouchMode = false
-        
-        // Store the original background
+
         val originalBackground = view.background
-        
+
         view.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                // Apply focus color with transparency and scale up
-                val focusDrawable = ColorDrawable(Color.argb(60, Color.red(focusColor), Color.green(focusColor), Color.blue(focusColor)))
+                val focusDrawable = ColorDrawable(
+                    Color.argb(
+                        60,
+                        Color.red(focusColor),
+                        Color.green(focusColor),
+                        Color.blue(focusColor)
+                    )
+                )
                 v.background = focusDrawable
                 v.scaleX = 1.1f
                 v.scaleY = 1.1f
                 v.elevation = 8f
             } else {
-                // Restore original background and scale
                 v.background = originalBackground
                 v.scaleX = 1.0f
                 v.scaleY = 1.0f
@@ -69,19 +85,16 @@ object TvUtils {
         }
     }
 
-    /**
-     * Setup D-pad navigation for a list of views
-     * @param views List of views to setup navigation for
-     * @param orientation Navigation orientation: HORIZONTAL or VERTICAL
-     */
-    fun setupDpadNavigation(views: List<View>, orientation: NavigationOrientation = NavigationOrientation.HORIZONTAL) {
+    fun setupDpadNavigation(
+        views: List<View>,
+        orientation: NavigationOrientation = NavigationOrientation.HORIZONTAL
+    ) {
         for (i in views.indices) {
             views[i].isFocusable = true
             views[i].isFocusableInTouchMode = false
-            
+
             when (orientation) {
                 NavigationOrientation.HORIZONTAL -> {
-                    // Set up left/right navigation
                     if (i > 0) {
                         views[i].nextFocusLeftId = views[i - 1].id
                     }
@@ -90,7 +103,6 @@ object TvUtils {
                     }
                 }
                 NavigationOrientation.VERTICAL -> {
-                    // Set up up/down navigation
                     if (i > 0) {
                         views[i].nextFocusUpId = views[i - 1].id
                     }
@@ -101,15 +113,12 @@ object TvUtils {
             }
         }
     }
-    
+
     enum class NavigationOrientation {
         HORIZONTAL,
         VERTICAL
     }
 
-    /**
-     * Request focus on the first focusable view
-     */
     fun requestDefaultFocus(vararg views: View) {
         for (view in views) {
             if (view.isFocusable && view.visibility == View.VISIBLE) {
@@ -119,9 +128,6 @@ object TvUtils {
         }
     }
 
-    /**
-     * Calculate video dimensions to fit TV screen while maintaining aspect ratio
-     */
     fun calculateTvVideoDimensions(
         screenWidth: Int,
         screenHeight: Int,
@@ -132,21 +138,119 @@ object TvUtils {
         val videoAspect = videoWidth.toFloat() / videoHeight.toFloat()
 
         return if (screenAspect > videoAspect) {
-            // Screen is wider - fit to height
             val width = (screenHeight * videoAspect).toInt()
             Pair(width, screenHeight)
         } else {
-            // Screen is taller - fit to width
             val height = (screenWidth / videoAspect).toInt()
             Pair(screenWidth, height)
         }
     }
 
-    /**
-     * Get recommended video resolution for TV
-     * Most Android TVs support 1080p or 4K
-     */
     fun getTvRecommendedResolution(): Pair<Int, Int> {
-        return Pair(1920, 1080) // Full HD 1080p
+        return Pair(1920, 1080)
+    }
+
+    fun makeRecyclerViewItemsFocusable(recyclerView: RecyclerView, @ColorInt focusColor: Int) {
+        recyclerView.addOnChildAttachStateChangeListener(
+            object : RecyclerView.OnChildAttachStateChangeListener {
+                override fun onChildViewAttachedToWindow(view: View) {
+                    view.isFocusable = true
+                    view.isFocusableInTouchMode = false
+                    val originalBackground = view.background
+                    view.setOnFocusChangeListener { v, hasFocus ->
+                        if (hasFocus) {
+                            val focusDrawable = ColorDrawable(
+                                Color.argb(
+                                    40,
+                                    Color.red(focusColor),
+                                    Color.green(focusColor),
+                                    Color.blue(focusColor)
+                                )
+                            )
+                            v.background = focusDrawable
+                            v.scaleX = 1.02f
+                            v.scaleY = 1.02f
+                            v.elevation = 4f
+                        } else {
+                            v.background = originalBackground
+                            v.scaleX = 1.0f
+                            v.scaleY = 1.0f
+                            v.elevation = 0f
+                        }
+                    }
+                }
+
+                override fun onChildViewDetachedFromWindow(view: View) {
+                    // no-op
+                }
+            }
+        )
+    }
+
+    fun setupScrollViewDpadNavigation(scrollView: ScrollView) {
+        scrollView.isFocusable = false
+        scrollView.descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
+        scrollView.isSmoothScrollingEnabled = true
+    }
+
+    fun makeViewGroupChildrenFocusable(viewGroup: ViewGroup, @ColorInt focusColor: Int) {
+        for (i in 0 until viewGroup.childCount) {
+            val child = viewGroup.getChildAt(i)
+            if (child.isClickable) {
+                applyTvFocusHighlight(child, focusColor)
+            } else if (child is ViewGroup) {
+                if (child.isClickable) {
+                    applyTvFocusHighlight(child, focusColor)
+                } else {
+                    makeViewGroupChildrenFocusable(child, focusColor)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun isTvMode(): Boolean {
+    val context = LocalContext.current
+    return remember { TvUtils.isTvMode(context) }
+}
+
+@Suppress("MagicNumber")
+fun Modifier.tvFocusHighlight(): Modifier = composed {
+    var isFocused by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isFocused) 1.03f else 1.0f,
+        label = "tvFocusScale"
+    )
+    val borderColor = MaterialTheme.colorScheme.primary
+
+    this
+        .onFocusChanged { isFocused = it.isFocused }
+        .scale(scale)
+        .then(
+            if (isFocused) {
+                Modifier.border(2.dp, borderColor, RoundedCornerShape(8.dp))
+            } else {
+                Modifier
+            }
+        )
+        .focusable()
+}
+
+fun Modifier.tvDpadHandler(
+    onBack: (() -> Unit)? = null,
+    onSelect: (() -> Unit)? = null
+): Modifier = this.onPreviewKeyEvent { event ->
+    if (event.type != androidx.compose.ui.input.key.KeyEventType.KeyDown) return@onPreviewKeyEvent false
+    when (event.key.nativeKeyCode) {
+        KeyEvent.KEYCODE_BACK -> {
+            onBack?.invoke()
+            onBack != null
+        }
+        KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
+            onSelect?.invoke()
+            onSelect != null
+        }
+        else -> false
     }
 }

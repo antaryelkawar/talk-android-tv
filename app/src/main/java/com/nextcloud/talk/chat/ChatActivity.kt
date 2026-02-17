@@ -191,6 +191,7 @@ import com.nextcloud.talk.utils.CapabilitiesUtil.retentionOfInstantMeetingRoom
 import com.nextcloud.talk.utils.CapabilitiesUtil.retentionOfSIPRoom
 import com.nextcloud.talk.utils.ContactUtils
 import com.nextcloud.talk.utils.ConversationUtils
+import com.nextcloud.talk.utils.TvUtils
 import com.nextcloud.talk.utils.DateConstants
 import com.nextcloud.talk.utils.DateUtils
 import com.nextcloud.talk.utils.DisplayUtils
@@ -272,6 +273,7 @@ class ChatActivity :
     CallStartedMessageInterface {
 
     var active = false
+    private var isTvMode = false
 
     private lateinit var binding: ActivityChatBinding
 
@@ -492,6 +494,7 @@ class ChatActivity :
         NextcloudTalkApplication.sharedApplication!!.componentApplication.inject(this)
 
         binding = ActivityChatBinding.inflate(layoutInflater)
+        isTvMode = TvUtils.isTvMode(this)
         setupActionBar()
         setContentView(binding.root)
 
@@ -1233,10 +1236,11 @@ class ChatActivity :
         }
 
         chatViewModel.getVoiceRecordingLocked.observe(this) { showContiniousVoiceRecording ->
+            if (isTvMode) return@observe
             if (showContiniousVoiceRecording) {
                 binding.voiceRecordingLock.visibility = View.GONE
                 supportFragmentManager.commit {
-                    setReorderingAllowed(true) // apparently used for optimizations
+                    setReorderingAllowed(true)
                     replace(R.id.fragment_container_activity_chat, MessageInputVoiceRecordingFragment())
                 }
             } else {
@@ -1248,6 +1252,7 @@ class ChatActivity :
         }
 
         chatViewModel.getVoiceRecordingInProgress.observe(this) { voiceRecordingInProgress ->
+            if (isTvMode) return@observe
             VibrationUtils.vibrateShort(context)
             if (voiceRecordingInProgress) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -1860,6 +1865,7 @@ class ChatActivity :
             !CapabilitiesUtil.isTypingStatusPrivate(conversationUser!!)
 
     private fun setupSwipeToReply() {
+        if (isTvMode) return
         if (this::participantPermissions.isInitialized &&
             participantPermissions.hasChatPermission() &&
             !isReadOnlyConversation()
@@ -1881,6 +1887,29 @@ class ChatActivity :
             val itemTouchHelper = ItemTouchHelper(messageSwipeCallback)
             itemTouchHelper.attachToRecyclerView(binding.messagesListView)
         }
+    }
+
+    @Suppress("MagicNumber")
+    override fun onKeyDown(keyCode: Int, event: android.view.KeyEvent?): Boolean {
+        if (isTvMode) {
+            when (keyCode) {
+                android.view.KeyEvent.KEYCODE_DPAD_UP -> {
+                    binding.messagesListView.scrollBy(0, -150)
+                    return true
+                }
+                android.view.KeyEvent.KEYCODE_DPAD_DOWN -> {
+                    binding.messagesListView.scrollBy(0, 150)
+                    return true
+                }
+                android.view.KeyEvent.KEYCODE_MENU -> {
+                    conversationVideoMenuItem?.let {
+                        onOptionsItemSelected(it)
+                        return true
+                    }
+                }
+            }
+        }
+        return super.onKeyDown(keyCode, event)
     }
 
     private fun loadAvatarForStatusBar() {

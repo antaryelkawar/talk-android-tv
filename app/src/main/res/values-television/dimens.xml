@@ -14,4 +14,11 @@
     <dimen name="tv_self_video_width">200dp</dimen>
     <dimen name="tv_self_video_height">260dp</dimen>
     <dimen name="tv_top_bar_height">64dp</dimen>
+
+    <!-- Larger touch targets for TV D-pad navigation -->
+    <dimen name="standard_margin">24dp</dimen>
+    <dimen name="standard_padding">16dp</dimen>
+    <dimen name="min_size_clickable_area">56dp</dimen>
+    <dimen name="avatar_size_big">96dp</dimen>
+    <dimen name="avatar_size_app_bar">40dp</dimen>
 </resources>

@@ -83,6 +83,7 @@ import com.nextcloud.talk.utils.NotificationUtils.getCallRingtoneUri
 import com.nextcloud.talk.utils.NotificationUtils.getMessageRingtoneUri
 import com.nextcloud.talk.utils.SecurityUtils
 import com.nextcloud.talk.utils.SpreedFeatures
+import com.nextcloud.talk.utils.TvUtils
 import com.nextcloud.talk.utils.bundle.BundleKeys.KEY_SCROLL_TO_NOTIFICATION_CATEGORY
 import com.nextcloud.talk.utils.permissions.PlatformPermissionUtil
 import com.nextcloud.talk.utils.power.PowerManagerUtils
@@ -143,6 +144,7 @@ class SettingsActivity :
     private var dbQueryDisposable: Disposable? = null
     private var openedByNotificationWarning: Boolean = false
     private var isOnline: MutableState<Boolean> = mutableStateOf(false)
+    private var isTvMode = false
 
     @SuppressLint("StringFormatInvalid")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -154,9 +156,14 @@ class SettingsActivity :
         }
 
         binding = ActivitySettingsBinding.inflate(layoutInflater)
+        isTvMode = TvUtils.isTvMode(this)
         setupActionBar()
         setContentView(binding.root)
         initSystemBars()
+
+        if (isTvMode) {
+            setupTvMode()
+        }
 
         binding.avatarImage.let { ViewCompat.setTransitionName(it, "userAvatar.transitionTag") }
 
@@ -287,6 +294,23 @@ class SettingsActivity :
         supportActionBar?.setIcon(resources!!.getColor(android.R.color.transparent, null).toDrawable())
         supportActionBar?.title = context.getString(R.string.nc_settings)
         viewThemeUtils.material.themeToolbar(binding.settingsToolbar)
+    }
+
+    private fun setupTvMode() {
+        TvUtils.setupScrollViewDpadNavigation(binding.scrollView)
+        binding.settingsCallSound.visibility = View.GONE
+        binding.settingsMessageSound.visibility = View.GONE
+        binding.settingsGplayOnlyWrapper.visibility = View.GONE
+        binding.settingsScreenLock.visibility = View.GONE
+        binding.settingsPhoneBookIntegration.visibility = View.GONE
+
+        binding.scrollView.post {
+            val focusColor = resources.getColor(R.color.colorPrimary, null)
+            TvUtils.makeViewGroupChildrenFocusable(
+                binding.scrollView.getChildAt(0) as android.view.ViewGroup,
+                focusColor
+            )
+        }
     }
 
     private fun getCurrentUser() {

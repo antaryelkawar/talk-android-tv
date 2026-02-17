@@ -44,12 +44,17 @@ import com.nextcloud.talk.models.json.autocomplete.AutocompleteUser
 import com.nextcloud.talk.utils.bundle.BundleKeys
 
 @Composable
-fun ContactItemRow(contact: AutocompleteUser, contactsViewModel: ContactsViewModel, context: Context) {
+fun ContactItemRow(
+    modifier: Modifier = Modifier,
+    contact: AutocompleteUser,
+    contactsViewModel: ContactsViewModel,
+    context: Context
+) {
     var isSelected by remember { mutableStateOf(contactsViewModel.selectedParticipantsList.value.contains(contact)) }
     val roomUiState by contactsViewModel.roomViewState.collectAsState()
     val isAddParticipants = contactsViewModel.isAddParticipantsView.collectAsState()
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(
                 onClick = {

@@ -160,6 +160,16 @@ class BrowserLoginActivity : BaseActivity() {
             viewModel.cancelLogin()
             onBackPressedDispatcher.onBackPressed()
         }
+
+        if (isTvMode) {
+            binding.cancelLoginBtn.isFocusable = true
+            binding.cancelLoginBtn.isFocusableInTouchMode = false
+            binding.cancelLoginBtn.requestFocus()
+            TvUtils.applyTvFocusHighlight(
+                binding.cancelLoginBtn,
+                resources.getColor(R.color.colorPrimary, null)
+            )
+        }
     }
 
     private fun launchDefaultWebBrowser(url: String) {

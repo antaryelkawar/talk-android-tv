@@ -26,10 +26,13 @@ import androidx.compose.ui.unit.dp
 import com.nextcloud.talk.contacts.CompanionClass
 import com.nextcloud.talk.contacts.ContactsViewModel
 import com.nextcloud.talk.models.json.autocomplete.AutocompleteUser
+import com.nextcloud.talk.utils.isTvMode
+import com.nextcloud.talk.utils.tvFocusHighlight
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContactsItem(contacts: List<AutocompleteUser>, contactsViewModel: ContactsViewModel, context: Context) {
+    val isTv = isTvMode()
     val groupedContacts: Map<String, List<AutocompleteUser>> = contacts.groupBy { contact ->
         (
             if (contact.source == "users") {
@@ -62,7 +65,9 @@ fun ContactsItem(contacts: List<AutocompleteUser>, contactsViewModel: ContactsVi
                 }
             }
             items(contactsForInitial) { contact ->
+                val itemModifier = if (isTv) Modifier.tvFocusHighlight() else Modifier
                 ContactItemRow(
+                    modifier = itemModifier,
                     contact = contact,
                     contactsViewModel = contactsViewModel,
                     context = context

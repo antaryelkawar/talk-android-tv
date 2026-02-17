@@ -128,6 +128,7 @@ import com.nextcloud.talk.utils.Mimetype
 import com.nextcloud.talk.utils.NotificationUtils
 import com.nextcloud.talk.utils.ParticipantPermissions
 import com.nextcloud.talk.utils.SpreedFeatures
+import com.nextcloud.talk.utils.TvUtils
 import com.nextcloud.talk.utils.UserIdUtils
 import com.nextcloud.talk.utils.bundle.BundleKeys
 import com.nextcloud.talk.utils.bundle.BundleKeys.ADD_ADDITIONAL_ACCOUNT
@@ -242,6 +243,7 @@ class ConversationsListActivity :
         )
     val searchBehaviorSubject = BehaviorSubject.createDefault(false)
     private lateinit var accountIconBadge: BadgeDrawable
+    private var isTvMode = false
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -258,6 +260,7 @@ class ConversationsListActivity :
         NextcloudTalkApplication.sharedApplication!!.componentApplication.inject(this)
 
         currentUser = currentUserProviderOld.currentUser.blockingGet()
+        isTvMode = TvUtils.isTvMode(this)
 
         conversationsListViewModel = ViewModelProvider(this, viewModelFactory)[ConversationsListViewModel::class.java]
         contextChatViewModel = ViewModelProvider(this, viewModelFactory)[ContextChatViewModel::class.java]
@@ -1220,12 +1223,24 @@ class ConversationsListActivity :
             }
             false
         }
-        binding.swipeRefreshLayoutView.setOnRefreshListener {
-            showMaintenanceModeWarning(false)
-            fetchRooms()
-            fetchPendingInvitations()
+        if (isTvMode) {
+            binding.swipeRefreshLayoutView.isEnabled = false
+            binding.floatingActionButton.visibility = View.GONE
+            TvUtils.makeRecyclerViewItemsFocusable(
+                binding.recyclerView,
+                resources.getColor(R.color.colorPrimary, null)
+            )
+            binding.recyclerView.post {
+                binding.recyclerView.getChildAt(0)?.requestFocus()
+            }
+        } else {
+            binding.swipeRefreshLayoutView.setOnRefreshListener {
+                showMaintenanceModeWarning(false)
+                fetchRooms()
+                fetchPendingInvitations()
+            }
+            binding.swipeRefreshLayoutView.let { viewThemeUtils.androidx.themeSwipeRefreshLayout(it) }
         }
-        binding.swipeRefreshLayoutView.let { viewThemeUtils.androidx.themeSwipeRefreshLayout(it) }
         binding.emptyLayout.setOnClickListener { showNewConversationsScreen() }
         binding.floatingActionButton.setOnClickListener {
             run(context)
@@ -1351,6 +1366,23 @@ class ConversationsListActivity :
         if (savedInstanceState.containsKey(KEY_SEARCH_QUERY)) {
             searchQuery = savedInstanceState.getString(KEY_SEARCH_QUERY, "")
         }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: android.view.KeyEvent?): Boolean {
+        if (isTvMode) {
+            when (keyCode) {
+                android.view.KeyEvent.KEYCODE_MENU -> {
+                    showNewConversationsScreen()
+                    return true
+                }
+                android.view.KeyEvent.KEYCODE_MEDIA_PLAY, android.view.KeyEvent.KEYCODE_BUTTON_R1 -> {
+                    fetchRooms()
+                    fetchPendingInvitations()
+                    return true
+                }
+            }
+        }
+        return super.onKeyDown(keyCode, event)
     }
 
     public override fun onDestroy() {

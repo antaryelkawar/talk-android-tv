@@ -111,10 +111,10 @@
             android:name="android.max_aspect"
             android:value="10" />
 
-        <!-- TV Banner -->
+        <!-- TV Banner (320x180dp as required by Android TV) -->
         <meta-data
             android:name="android.app.banner"
-            android:resource="@mipmap/ic_launcher" />
+            android:resource="@drawable/tv_banner" />
 
         <activity
             android:name=".activities.MainActivity"
