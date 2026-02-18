@@ -23,7 +23,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -98,7 +97,7 @@ import com.nextcloud.talk.utils.bundle.BundleKeys
 import androidx.activity.compose.BackHandler
 import com.nextcloud.talk.utils.isTvMode
 import com.nextcloud.talk.utils.tvDpadHandler
-import com.nextcloud.talk.utils.tvFocusHighlight
+import com.nextcloud.talk.utils.tvFocusEnhanced
 import javax.inject.Inject
 
 @AutoInjector(NextcloudTalkApplication::class)
@@ -721,7 +720,7 @@ fun CreateConversation(conversationCreationViewModel: ConversationCreationViewMo
         contentAlignment = Alignment.Center
     ) {
         Button(
-            modifier = Modifier.focusable(),
+            modifier = Modifier.tvFocusEnhanced(),
             onClick = {
                 conversationCreationViewModel.createRoomAndAddParticipants(
                     roomType = CompanionClass.ROOM_TYPE_GROUP,

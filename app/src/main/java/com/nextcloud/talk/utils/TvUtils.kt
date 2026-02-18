@@ -157,7 +157,14 @@ object TvUtils {
         return Pair(1920, 1080)
     }
 
-    fun setupRecyclerViewForTv(recyclerView: RecyclerView, @ColorInt focusColor: Int) {
+    fun setupRecyclerViewForTv(
+        recyclerView: RecyclerView,
+        @ColorInt focusColor: Int,
+        onNavigateUp: (() -> Unit)? = null,
+        onNavigateDown: (() -> Unit)? = null,
+        onNavigateLeft: (() -> Unit)? = null,
+        onNavigateRight: (() -> Unit)? = null
+    ) {
         recyclerView.descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
         recyclerView.isFocusable = false
         recyclerView.isFocusableInTouchMode = false
@@ -196,10 +203,50 @@ object TvUtils {
                             v.elevation = 0f
                         }
                     }
+
+                    view.setOnKeyListener { v, keyCode, event ->
+                        if (event.action != android.view.KeyEvent.ACTION_DOWN) return@setOnKeyListener false
+                        val parent = v.parent as? RecyclerView ?: return@setOnKeyListener false
+                        val position = parent.getChildAdapterPosition(v)
+                        val itemCount = parent.adapter?.itemCount ?: 0
+
+                        when (keyCode) {
+                            android.view.KeyEvent.KEYCODE_DPAD_UP -> {
+                                if (position == 0 && onNavigateUp != null) {
+                                    onNavigateUp.invoke()
+                                    return@setOnKeyListener true
+                                }
+                                false
+                            }
+                            android.view.KeyEvent.KEYCODE_DPAD_DOWN -> {
+                                if (position == itemCount - 1 && onNavigateDown != null) {
+                                    onNavigateDown.invoke()
+                                    return@setOnKeyListener true
+                                }
+                                false
+                            }
+                            android.view.KeyEvent.KEYCODE_DPAD_LEFT -> {
+                                if (onNavigateLeft != null) {
+                                    onNavigateLeft.invoke()
+                                    return@setOnKeyListener true
+                                }
+                                false
+                            }
+                            android.view.KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                                if (onNavigateRight != null) {
+                                    onNavigateRight.invoke()
+                                    return@setOnKeyListener true
+                                }
+                                false
+                            }
+                            else -> false
+                        }
+                    }
                 }
 
                 override fun onChildViewDetachedFromWindow(view: View) {
                     view.setOnFocusChangeListener(null)
+                    view.setOnKeyListener(null)
                 }
             }
         )
@@ -271,14 +318,85 @@ fun Modifier.tvFocusHighlight(): Modifier = composed {
         .focusable()
 }
 
+@Suppress("MagicNumber")
+fun Modifier.tvListItemFocusHighlight(
+    isFirstItem: Boolean = false,
+    isLastItem: Boolean = false,
+    onNavigateUp: (() -> Unit)? = null,
+    onNavigateDown: (() -> Unit)? = null
+): Modifier = composed {
+    var isFocused by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isFocused) 1.05f else 1.0f,
+        label = "tvListItemFocusScale"
+    )
+    val borderColor = MaterialTheme.colorScheme.primary
+
+    this
+        .onPreviewKeyEvent { event ->
+            if (event.type != androidx.compose.ui.input.key.KeyEventType.KeyDown) {
+                return@onPreviewKeyEvent false
+            }
+            when (event.key.nativeKeyCode) {
+                KeyEvent.KEYCODE_DPAD_UP -> {
+                    if (isFirstItem && onNavigateUp != null) {
+                        onNavigateUp.invoke()
+                        true
+                    } else {
+                        false
+                    }
+                }
+                KeyEvent.KEYCODE_DPAD_DOWN -> {
+                    if (isLastItem && onNavigateDown != null) {
+                        onNavigateDown.invoke()
+                        true
+                    } else {
+                        false
+                    }
+                }
+                else -> false
+            }
+        }
+        .onFocusChanged { isFocused = it.isFocused }
+        .scale(scale)
+        .then(
+            if (isFocused) {
+                Modifier.border(3.dp, borderColor, RoundedCornerShape(8.dp))
+            } else {
+                Modifier
+            }
+        )
+        .focusable()
+}
+
 fun Modifier.tvDpadHandler(
-    onSelect: (() -> Unit)? = null
+    onSelect: (() -> Unit)? = null,
+    onUp: (() -> Unit)? = null,
+    onDown: (() -> Unit)? = null,
+    onLeft: (() -> Unit)? = null,
+    onRight: (() -> Unit)? = null
 ): Modifier = this.onPreviewKeyEvent { event ->
     if (event.type != androidx.compose.ui.input.key.KeyEventType.KeyDown) return@onPreviewKeyEvent false
     when (event.key.nativeKeyCode) {
         KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> {
             onSelect?.invoke()
             onSelect != null
+        }
+        KeyEvent.KEYCODE_DPAD_UP -> {
+            onUp?.invoke()
+            onUp != null
+        }
+        KeyEvent.KEYCODE_DPAD_DOWN -> {
+            onDown?.invoke()
+            onDown != null
+        }
+        KeyEvent.KEYCODE_DPAD_LEFT -> {
+            onLeft?.invoke()
+            onLeft != null
+        }
+        KeyEvent.KEYCODE_DPAD_RIGHT -> {
+            onRight?.invoke()
+            onRight != null
         }
         else -> false
     }

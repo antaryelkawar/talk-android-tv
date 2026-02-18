@@ -1233,12 +1233,15 @@ class ConversationsListActivity :
 
             binding.conversationListAppbar.descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
 
+            val focusColor = resources.getColor(R.color.colorPrimary, null)
+
             TvUtils.setupRecyclerViewForTv(
-                binding.recyclerView,
-                resources.getColor(R.color.colorPrimary, null)
+                recyclerView = binding.recyclerView,
+                focusColor = focusColor,
+                onNavigateUp = { binding.switchAccountButton.requestFocus() },
+                onNavigateLeft = { binding.switchAccountButton.requestFocus() }
             )
 
-            val focusColor = resources.getColor(R.color.colorPrimary, null)
             listOf(
                 binding.switchAccountButton,
                 binding.filterConversationsButton,
@@ -1247,7 +1250,6 @@ class ConversationsListActivity :
                 TvUtils.applyTvFocusHighlight(button, focusColor)
             }
 
-            binding.recyclerView.nextFocusUpId = binding.switchAccountButton.id
             binding.switchAccountButton.nextFocusDownId = binding.recyclerView.id
             binding.filterConversationsButton.nextFocusDownId = binding.recyclerView.id
             binding.threadsButton.nextFocusDownId = binding.recyclerView.id
@@ -1391,20 +1393,9 @@ class ConversationsListActivity :
     override fun onKeyDown(keyCode: Int, event: android.view.KeyEvent?): Boolean {
         if (isTvMode) {
             when (keyCode) {
-                android.view.KeyEvent.KEYCODE_DPAD_UP -> {
-                    val focusedChild = binding.recyclerView.focusedChild
-                    if (focusedChild != null) {
-                        val pos = binding.recyclerView.getChildAdapterPosition(focusedChild)
-                        if (pos == 0) {
-                            binding.switchAccountButton.requestFocus()
-                            return true
-                        }
-                    }
-                }
-                android.view.KeyEvent.KEYCODE_DPAD_LEFT -> {
-                    val focusedChild = binding.recyclerView.focusedChild
-                    if (focusedChild != null) {
-                        binding.switchAccountButton.requestFocus()
+                android.view.KeyEvent.KEYCODE_DPAD_DOWN -> {
+                    if (!binding.recyclerView.hasFocus()) {
+                        TvUtils.requestInitialFocus(binding.recyclerView)
                         return true
                     }
                 }

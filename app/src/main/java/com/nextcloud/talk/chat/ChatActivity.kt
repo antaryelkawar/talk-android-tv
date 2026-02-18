@@ -1531,11 +1531,10 @@ class ChatActivity :
 
         binding.let { viewThemeUtils.material.colorMaterialButtonPrimaryFilled(it.unreadMessagesPopup) }
 
-        // Setup TV mode for messages RecyclerView
         if (isTvMode) {
             TvUtils.setupRecyclerViewForTv(
-                binding.messagesListView,
-                resources.getColor(R.color.colorPrimary, null)
+                recyclerView = binding.messagesListView,
+                focusColor = resources.getColor(R.color.colorPrimary, null)
             )
 
             binding.scrollDownButton.visibility = View.GONE
@@ -1544,8 +1543,6 @@ class ChatActivity :
             TvNavigationHelper.setupToolbarForTv(binding.chatToolbar)
             binding.chatToolbar.isFocusable = true
             binding.chatToolbar.isFocusableInTouchMode = false
-            binding.chatToolbar.nextFocusDownId = binding.messagesListView.id
-            binding.messagesListView.nextFocusUpId = binding.chatToolbar.id
 
             binding.messagesListView.post {
                 TvNavigationHelper.requestFocusOnFirstVisibleItem(binding.messagesListView)
@@ -1952,7 +1949,7 @@ class ChatActivity :
                             true
                         }
                         else -> {
-                            binding.messagesListView.smoothScrollBy(0, -scrollAmount)
+                            TvNavigationHelper.requestFocusOnLastVisibleItem(binding.messagesListView)
                             true
                         }
                     }
@@ -1973,7 +1970,7 @@ class ChatActivity :
                             }
                         }
                         else -> {
-                            binding.messagesListView.smoothScrollBy(0, scrollAmount)
+                            TvNavigationHelper.requestFocusOnFirstVisibleItem(binding.messagesListView)
                             true
                         }
                     }

@@ -26,13 +26,16 @@ import androidx.compose.ui.unit.dp
 import com.nextcloud.talk.contacts.CompanionClass
 import com.nextcloud.talk.contacts.ContactsViewModel
 import com.nextcloud.talk.models.json.autocomplete.AutocompleteUser
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
 import com.nextcloud.talk.utils.isTvMode
-import com.nextcloud.talk.utils.tvFocusHighlight
+import com.nextcloud.talk.utils.tvListItemFocusHighlight
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContactsItem(contacts: List<AutocompleteUser>, contactsViewModel: ContactsViewModel, context: Context) {
     val isTv = isTvMode()
+    val focusManager = LocalFocusManager.current
     val groupedContacts: Map<String, List<AutocompleteUser>> = contacts.groupBy { contact ->
         (
             if (contact.source == "users") {
@@ -44,6 +47,10 @@ fun ContactsItem(contacts: List<AutocompleteUser>, contactsViewModel: ContactsVi
             }
             ).toString()
     }
+    val allContacts = groupedContacts.values.flatten()
+    val firstContact = allContacts.firstOrNull()
+    val lastContact = allContacts.lastOrNull()
+
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth(),
@@ -65,7 +72,24 @@ fun ContactsItem(contacts: List<AutocompleteUser>, contactsViewModel: ContactsVi
                 }
             }
             items(contactsForInitial) { contact ->
-                val itemModifier = if (isTv) Modifier.tvFocusHighlight() else Modifier
+                val itemModifier = if (isTv) {
+                    Modifier.tvListItemFocusHighlight(
+                        isFirstItem = contact == firstContact,
+                        isLastItem = contact == lastContact,
+                        onNavigateUp = if (contact == firstContact) {
+                            { focusManager.moveFocus(FocusDirection.Up) }
+                        } else {
+                            null
+                        },
+                        onNavigateDown = if (contact == lastContact) {
+                            { focusManager.moveFocus(FocusDirection.Down) }
+                        } else {
+                            null
+                        }
+                    )
+                } else {
+                    Modifier
+                }
                 ContactItemRow(
                     modifier = itemModifier,
                     contact = contact,

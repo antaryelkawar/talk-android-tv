@@ -32,10 +32,13 @@ import androidx.compose.ui.unit.sp
 import com.nextcloud.talk.R
 import com.nextcloud.talk.conversationcreation.ConversationCreationActivity
 import com.nextcloud.talk.openconversations.ListOpenConversationsActivity
+import com.nextcloud.talk.utils.isTvMode
+import com.nextcloud.talk.utils.tvFocusHighlight
 
 @Composable
 fun ConversationCreationOptions() {
     val context = LocalContext.current
+    val isTv = isTvMode()
     Column {
         Row(
             modifier = Modifier
@@ -43,7 +46,8 @@ fun ConversationCreationOptions() {
                 .clickable {
                     val intent = Intent(context, ConversationCreationActivity::class.java)
                     context.startActivity(intent)
-                },
+                }
+                .then(if (isTv) Modifier.tvFocusHighlight() else Modifier),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -69,7 +73,8 @@ fun ConversationCreationOptions() {
                 .clickable {
                     val intent = Intent(context, ListOpenConversationsActivity::class.java)
                     context.startActivity(intent)
-                },
+                }
+                .then(if (isTv) Modifier.tvFocusHighlight() else Modifier),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
